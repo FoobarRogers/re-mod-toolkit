@@ -1,0 +1,13 @@
+interface:
+  display_name: Mod 打包
+  short_description: 生成并核验 test、fix、release 与 add-on（附加包）模组交付包及文件清单
+  default_prompt: Use $mod-package to build and verify the requested mod package.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

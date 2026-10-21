@@ -1,0 +1,53 @@
+{
+  "description": "RE Engine Mod 开发工具箱：按模型路由 SessionStart Discipline 注入、大文件读取硬拦截、上下文水位提醒",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "process",
+            "command": "python",
+            "enabled": true,
+            "statusMessage": "正在路由 Discipline…",
+            "args": ["${ZCODE_PLUGIN_ROOT}/hooks/discipline-router/discipline_router.py"],
+            "timeoutMs": 5000
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Read|Bash",
+        "hooks": [
+          {
+            "type": "process",
+            "command": "python",
+            "enabled": true,
+            "statusMessage": "正在检查大文件读取风险…",
+            "args": [
+              "${ZCODE_PLUGIN_ROOT}/hooks/zcode-large-file-guard/large-file-guard.py",
+              "65536",
+              "120",
+              "262144"
+            ],
+            "timeoutMs": 5000
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "process",
+            "command": "python",
+            "enabled": true,
+            "statusMessage": "正在检查上下文水位…",
+            "args": ["${ZCODE_PLUGIN_ROOT}/hooks/context-reminder/context_reminder.py"],
+            "timeoutMs": 5000
+          }
+        ]
+      }
+    ]
+  }
+}

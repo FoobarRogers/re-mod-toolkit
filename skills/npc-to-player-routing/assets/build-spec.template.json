@@ -1,0 +1,82 @@
+{
+  "_schema": "npc-to-player/build-spec@1",
+  "_note": "Skill 的判定输出 / Workflow 的唯一输入。字段名已按 scripts/taxonomy_build.py 源码逐一核对（2026-09-30）——曾因模板写顶层 carriers/dummy_roles/pfb.template 而漂移，改前务必对源码。不用的可选字段保留空数组或 null。",
+  "_consumers_note": "① 【构建器直接消费】= taxonomy_build.py 读的字段；② 【§7 分支消费】= 条件分支读的字段，分支处理完再交给构建器。",
+
+  "label": "C1_MihonoBourbon",
+  "source": "research/taxonomy-runtime-validation/C1_MihonoBourbon/work/source",
+  "asset_id": "J022",
+  "slot": "423",
+
+  "route": [],
+  "_route_note": "本 skill 唯一的判定输出：weight_surgery / vertical_align / chain_fill 任意组合；workflow 只按它分派条件分支",
+
+  "private": {
+    "_consumer": "构建器直接消费",
+    "dir": "player/JRRB/J022",
+    "carriers": [
+      {
+        "role": "wst",
+        "stem": "npc/mod/npc005_00/npc005_00_hair/npc005_00_hair",
+        "rename": "JRwst022",
+        "_why": "carrier 由材质/贴图引用判定（含 eye/face/hair 且引用作者贴图），不看文件名与大小"
+      },
+      { "role": "arm",  "dummy": true, "rename": "JRarm022" },
+      { "role": "body", "dummy": true, "rename": "JRbody022" },
+      { "role": "helm", "dummy": true, "rename": "JRhelm022" }
+    ],
+    "leg_reuses": "arm",
+    "_dummy_note": "未承载模型的槽用 dummy: true；全项目没有 JRleg###，leg 一律复用 arm"
+  },
+
+  "prefab": {
+    "_consumer": "构建器直接消费",
+    "template_dir": "base/golden/J017_AstonMachan_R1/mod/natives/STM/player/prefab/mod/f/pl423",
+    "rewrite": [
+      ["JRRB/J017", "JRRB/J022"],
+      ["JRarm017", "JRarm022"],
+      ["JRbody017", "JRbody022"],
+      ["JRhelm017", "JRhelm022"],
+      ["JRwst017", "JRwst022"]
+    ],
+    "filename_rewrite": [["f_arm423", "f_arm311"]],
+    "_enc": "utf-16-le",
+    "_rule": "等长替换：size 不变、changed bytes 必须全落在声明区域；filename_rewrite 仅在目标槽号 ≠ 模板槽号时需要"
+  },
+
+  "head_layer": {
+    "_consumer": "构建器直接消费",
+    "_note": "头部层绑定面对 player 外观无静态差别，默认空数组；需要时给 [{\"src\":...,\"dst\":...}]"
+  },
+
+  "textures": ["dddder4/npc005"],
+  "copy_paths": [],
+  "extra_files": [],
+  "_extra_files_note": "chain 的补/改名落在这里：{\"src\": 源真 chain 路径, \"dst\": \"natives/STM/player/JRRB/J0##/JRwst0##.chain.48\"}（§7.3 分支产出）",
+
+  "allow_mesh_version": [],
+  "register_mesh_version": [],
+  "_version_note": "allow = 允许解析（承载件，要算 LuaBone）；register = 随包携带但只复制。研究登记 ≠ 生产支持",
+
+  "lua_bone_allow_missing": [],
+  "_lua_bone_note": "逐骨显式声明；实际缺失必须 ⊆ 声明名单，否则 STOP。生产门禁不放宽",
+  "lua_bone_mirror": { "JRwst022": ["JRarm022", "JRbody022", "JRhelm022"] },
+
+  "rebind": [],
+  "_rebind_consumer": "§7.1 分支消费（构建前对源 mesh 做等长改写）；必须先经 armature 蒙皮槽位表解析骨身份，且处置需用户确认",
+
+  "vertical_offset_y": null,
+  "_vertical_offset_consumer": "§7.2 分支消费（构建后改 4 份 LuaBone JSON 的 Waist_00.y）；典型值 -0.2118",
+
+  "chain_fills": [],
+  "_chain_fills_consumer": "§7.3 分支消费，转写成上面的 extra_files[]；两种做法（源真 chain / 936B 空 chain）在 notes 里写明用哪种",
+
+  "modinfo_name": "[ResearchTest]...",
+  "version": "test1",
+  "modinfo_description": "一律新建，不含源资源内容",
+
+  "blocked_by": [],
+  "_blocked_by_note": "非空即停 ⇒ MANUAL_REVIEW_REQUIRED + 四要素（现象/证据/卡在哪条判据/需裁决什么）",
+
+  "notes": []
+}

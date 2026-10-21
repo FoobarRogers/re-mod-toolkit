@@ -1,0 +1,185 @@
+[
+  {
+    "file": "natives/STM/player/prefab/mod/f/pl423/f_arm423.pfb.17",
+    "source_sha256": "f5e5b6abcba6e3cc736ccd29cbe4e709c7d68a94713376fea1cbb1684fb711ac",
+    "normalized_sha256": "2d60d3d2fc45c9cdb9575d3980d5dd26ac9ca9c91b67e3878df0bf172bd05fed",
+    "relevant_strings_after": [
+      {
+        "offset": "0x70",
+        "string": "player/JRRB/J017/JRarm017.mesh"
+      },
+      {
+        "offset": "0xb2",
+        "string": "player/JRRB/J017/JRarm017.mdf2"
+      },
+      {
+        "offset": "0x16c",
+        "string": "player/JRRB/J017/JRarm017.chain"
+      },
+      {
+        "offset": "0x254",
+        "string": "JRarm017"
+      },
+      {
+        "offset": "0x2c8",
+        "string": "player/JRRB/J017/JRarm017.mesh"
+      },
+      {
+        "offset": "0x310",
+        "string": "player/JRRB/J017/JRarm017.mdf2"
+      },
+      {
+        "offset": "0x5b0",
+        "string": "player/JRRB/J017/JRarm017.chain"
+      }
+    ]
+  },
+  {
+    "file": "natives/STM/player/prefab/mod/f/pl423/f_body423.pfb.17",
+    "source_sha256": "75dd76abb3b63d20ac4569fdc76abef214e9202072db2f5def824ae97e3e108b",
+    "normalized_sha256": "b28808b9f4390cab5c74dcffc5485f63c703bc0740107a7c7e871b905495dfd7",
+    "relevant_strings_after": [
+      {
+        "offset": "0x70",
+        "string": "player/JRRB/J017/JRbody017.mesh"
+      },
+      {
+        "offset": "0xb4",
+        "string": "player/JRRB/J017/JRbody017.mdf2"
+      },
+      {
+        "offset": "0x174",
+        "string": "player/JRRB/J017/JRbody017.chain"
+      },
+      {
+        "offset": "0x264",
+        "string": "JRbody017"
+      },
+      {
+        "offset": "0x2d8",
+        "string": "player/JRRB/J017/JRbody017.mesh"
+      },
+      {
+        "offset": "0x320",
+        "string": "player/JRRB/J017/JRbody017.mdf2"
+      },
+      {
+        "offset": "0x5cc",
+        "string": "player/JRRB/J017/JRbody017.chain"
+      }
+    ]
+  },
+  {
+    "file": "natives/STM/player/prefab/mod/f/pl423/f_helm423.pfb.17",
+    "source_sha256": "7c04575022e96bd5d308112d7c367ce100c35a4ae555dd491ee090e2ebb5a2c2",
+    "normalized_sha256": "2705b6854e335c647817c6aefd624a50a37a25edb1832637d4478cd3930c903e",
+    "relevant_strings_after": [
+      {
+        "offset": "0x80",
+        "string": "player/JRRB/J017/JRhelm017.mesh"
+      },
+      {
+        "offset": "0xc4",
+        "string": "player/JRRB/J017/JRhelm017.mdf2"
+      },
+      {
+        "offset": "0x108",
+        "string": "player/JRRB/J017/JRhelm017.chain"
+      },
+      {
+        "offset": "0x14e",
+        "string": "player/JRRB/J017/JRhelm017.user"
+      },
+      {
+        "offset": "0x240",
+        "string": "player/JRRB/J017/JRhelm017.user"
+      },
+      {
+        "offset": "0x294",
+        "string": "JRhelm017"
+      },
+      {
+        "offset": "0x308",
+        "string": "player/JRRB/J017/JRhelm017.mesh"
+      },
+      {
+        "offset": "0x350",
+        "string": "player/JRRB/J017/JRhelm017.mdf2"
+      },
+      {
+        "offset": "0x57c",
+        "string": "player/JRRB/J017/JRhelm017.chain"
+      }
+    ]
+  },
+  {
+    "file": "natives/STM/player/prefab/mod/f/pl423/f_leg423.pfb.17",
+    "source_sha256": "f5e5b6abcba6e3cc736ccd29cbe4e709c7d68a94713376fea1cbb1684fb711ac",
+    "normalized_sha256": "2d60d3d2fc45c9cdb9575d3980d5dd26ac9ca9c91b67e3878df0bf172bd05fed",
+    "relevant_strings_after": [
+      {
+        "offset": "0x70",
+        "string": "player/JRRB/J017/JRarm017.mesh"
+      },
+      {
+        "offset": "0xb2",
+        "string": "player/JRRB/J017/JRarm017.mdf2"
+      },
+      {
+        "offset": "0x16c",
+        "string": "player/JRRB/J017/JRarm017.chain"
+      },
+      {
+        "offset": "0x254",
+        "string": "JRarm017"
+      },
+      {
+        "offset": "0x2c8",
+        "string": "player/JRRB/J017/JRarm017.mesh"
+      },
+      {
+        "offset": "0x310",
+        "string": "player/JRRB/J017/JRarm017.mdf2"
+      },
+      {
+        "offset": "0x5b0",
+        "string": "player/JRRB/J017/JRarm017.chain"
+      }
+    ]
+  },
+  {
+    "file": "natives/STM/player/prefab/mod/f/pl423/f_wst423.pfb.17",
+    "source_sha256": "15b990fda8588b40a10120c69a084d2335cc796c552be26f66b08a89e7d10cca",
+    "normalized_sha256": "4a371df2fb3325e20902c0ee56f706f1dd618a805c2d6db19b16fc2f8a87e820",
+    "relevant_strings_after": [
+      {
+        "offset": "0x70",
+        "string": "player/JRRB/J017/JRwst017.mesh"
+      },
+      {
+        "offset": "0xb2",
+        "string": "player/JRRB/J017/JRwst017.mdf2"
+      },
+      {
+        "offset": "0x174",
+        "string": "player/JRRB/J017/JRwst017.chain"
+      },
+      {
+        "offset": "0x264",
+        "string": "JRwst017"
+      },
+      {
+        "offset": "0x2d8",
+        "string": "player/JRRB/J017/JRwst017.mesh"
+      },
+      {
+        "offset": "0x320",
+        "string": "player/JRRB/J017/JRwst017.mdf2"
+      },
+      {
+        "offset": "0x5d0",
+        "string": "player/JRRB/J017/JRwst017.chain"
+      }
+    ]
+  }
+]

@@ -1,0 +1,64 @@
+# Summary
+
+[Introduction](README.md)
+
+# Troubleshooting
+
+- [VR Troubleshooting](troubleshooting/VR-Troubleshooting.md)
+
+# Examples
+
+- [Example Scripts](examples/Example-Scripts.md)
+- [Example Snippets](examples/Example-Snippets.md)
+
+# Tools
+- [Object Explorer](object_explorer/object_explorer.md)
+- [Chain Viewer](chain_viewer/chain_viewer.md)
+- [Behavior Tree/FSM Editor](bhvt_editor/bhvt_editor.md)
+
+# Lua Scripting Reference
+- [General](api/general/README.md)
+    - [Notes on Return Types](api/general/Notes-on-Return-Types.md)
+    - [Notes on Method Arguments](api/general/Notes-on-Method-Arguments.md)
+    - [Best Practices](api/general/best-practices.md)
+- [APIs](api/README.md)
+    - [draw](api/draw.md)
+    - [fs](api/fs.md)
+    - [imgui](api/imgui.md)
+    - [imnodes](api/imnodes.md)
+    - [imguizmo](api/imguizmo.md)
+    - [json](api/json.md)
+    - [log](api/log.md)
+    - [re (Callbacks)](api/re.md)
+    - [reframework](api/reframework.md)
+    - [sdk](api/sdk.md)
+    - [vrmod](api/vrmod.md)
+    - [object_explorer](api/object_explorer.md)
+    - [thread](api/thread.md)
+- [Types](api/types/README.md)
+    - [VectorXf](api/types/VectorXf.md)
+    - [Matrix4x4f](api/types/Matrix4x4f.md)
+    - [Quaternion](api/types/Quaternion.md)
+    - [REComponent](api/types/REComponent.md)
+    - [REField](api/types/REField.md)
+    - [REManagedObject](api/types/REManagedObject.md)
+    - [REMethodDefinition](api/types/REMethodDefinition.md)
+    - [RETypeDefinition](api/types/RETypeDefinition.md)
+    - [RETransform](api/types/RETransform.md)
+    - [REResource](api/types/REResource.md)
+    - [SystemArray](api/types/SystemArray.md)
+    - [ValueType](api/types/ValueType.md)
+
+# C# Scripting Reference
+- [Introduction](api_cs/general/README.md)
+    - [API, TDB & VM Reference](api_cs/general/api-reference.md)
+    - [Type System (TypeDefinition, Method, Field)](api_cs/general/type-system.md)
+    - [Attributes](api_cs/general/attributes.md)
+    - [Method Hooks](api_cs/general/hooks.md)
+    - [Typed Proxies](api_cs/general/typed-proxies.md)
+    - [ManagedObject & IObject](api_cs/general/managed-objects.md)
+    - [Arrays](api_cs/general/arrays.md)
+    - [Notes on Threading](api_cs/general/Notes-On-Threading.md)
+    - [Benchmarks](api_cs/general/benchmarks.md)
+- [Examples](api_cs/examples/additional-save-slots.md)
+    - [RE9 Additional Save Slots](api_cs/examples/additional-save-slots.md)

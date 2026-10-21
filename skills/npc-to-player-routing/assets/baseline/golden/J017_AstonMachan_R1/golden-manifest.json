@@ -1,0 +1,71 @@
+{
+  "schema_version": 2,
+  "golden_id": "J017",
+  "golden_revision": "R1",
+  "status": "GOLDEN_CANDIDATE",
+  "character": "Aston Machan",
+  "source_testbuild": {
+    "filename": "AstonMachan_HunterRigCompare_PL423_test1(2).zip",
+    "sha256": "95b89b4d0b74c2d9a804dddceba6c844f9585b3c4e320c357d3d5b5ecafc6025",
+    "user_reported_runtime_status": "working"
+  },
+  "target_player_slot": "PL423",
+  "namespace": "JRRB",
+  "resource_prefix": "JR",
+  "historical_mapping": {
+    "namespace": {
+      "from": "zhst",
+      "to": "JRRB"
+    },
+    "asset_dir": {
+      "from": "z017",
+      "to": "J017"
+    },
+    "resources": {
+      "starm024": "JRarm017",
+      "stbody024": "JRbody017",
+      "sthelm024": "JRhelm017",
+      "stwst024": "JRwst017"
+    }
+  },
+  "slot_binding": {
+    "f_arm423.pfb.17": "JRarm017",
+    "f_body423.pfb.17": "JRbody017",
+    "f_helm423.pfb.17": "JRhelm017",
+    "f_leg423.pfb.17": "JRarm017",
+    "f_wst423.pfb.17": "JRwst017"
+  },
+  "resource_roles": {
+    "JRarm017": "dummy/null visual; also reused by leg PFB",
+    "JRbody017": "dummy/null visual",
+    "JRhelm017": "dummy/null visual + JRhelm017.user",
+    "JRwst017": "actual full-body Aston Machan visual"
+  },
+  "texture_policy": {
+    "mode": "preserve_source_paths",
+    "root": "dddder4/npc746",
+    "refs": [
+      "dddder4/npc746/body_ALBA.tex",
+      "dddder4/npc746/eyetail_ALBA.tex",
+      "dddder4/npc746/face_ALBA.tex",
+      "dddder4/npc746/hair_ALBA.tex"
+    ]
+  },
+  "luabone": {
+    "custom_names": [
+      "JRarm017.json",
+      "JRbody017.json",
+      "JRhelm017.json",
+      "JRwst017.json"
+    ],
+    "content_policy": "numeric data preserved from source testbuild; future builds generate target mesh Local Translation - f_shadow.json Local Translation",
+    "all_four_configs_identical": true,
+    "content_sha256": "a04883bd45a39875a204ecf7ce3e61ddbf94104d90f112da7a9d844fcb60c3ff"
+  },
+  "pfb_policy": "minimum equal-length UTF-16LE resource token replacement; preserve hierarchy/components/unknown fields",
+  "validation": {
+    "static": "PASS",
+    "ingame": "PENDING",
+    "runtime_residual_scan_scope": "natives/ + reframework/ only; docs may mention historical IDs"
+  }
+}

@@ -1,0 +1,13 @@
+interface:
+  display_name: REFramework Lua 开发
+  short_description: 按运行时生命周期与 Hook 约束开发 REFramework Lua 模组，并修复脚本自身的加载期报错
+  default_prompt: Use $reframework-lua-development to implement or fix this REFramework Lua change.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

@@ -1,0 +1,206 @@
+{
+  "source_zip": "AstonMachan_HunterRigCompare_PL423_test1(2).zip",
+  "source_zip_sha256": "95b89b4d0b74c2d9a804dddceba6c844f9585b3c4e320c357d3d5b5ecafc6025",
+  "status": "PASS",
+  "pfb_static_pass": true,
+  "missing_pfb_resource_refs": [],
+  "historical_token_residuals": [],
+  "renamed_resource_content_preserved": [
+    {
+      "source": "natives/STM/player/zhst/z017/starm024.chain.48",
+      "normalized": "natives/STM/player/JRRB/J017/JRarm017.chain.48",
+      "source_sha256": "f4f967521f43d8e94f5381da93b385329cafde0c0a76f5bb3bee4b47770aeb70",
+      "normalized_sha256": "f4f967521f43d8e94f5381da93b385329cafde0c0a76f5bb3bee4b47770aeb70",
+      "byte_identical": true
+    },
+    {
+      "source": "natives/STM/player/zhst/z017/starm024.mdf2.23",
+      "normalized": "natives/STM/player/JRRB/J017/JRarm017.mdf2.23",
+      "source_sha256": "601943fcbc626cc88ab961a3b41a17457f643d1b5cf182d2d31e667324215208",
+      "normalized_sha256": "601943fcbc626cc88ab961a3b41a17457f643d1b5cf182d2d31e667324215208",
+      "byte_identical": true
+    },
+    {
+      "source": "natives/STM/player/zhst/z017/starm024.mesh.2109148288",
+      "normalized": "natives/STM/player/JRRB/J017/JRarm017.mesh.2109148288",
+      "source_sha256": "eb4d33f8c762f3032a7608f967b18efe8aae75f223c2ce73ae50b4b69ef8407f",
+      "normalized_sha256": "eb4d33f8c762f3032a7608f967b18efe8aae75f223c2ce73ae50b4b69ef8407f",
+      "byte_identical": true
+    },
+    {
+      "source": "natives/STM/player/zhst/z017/stbody024.chain.48",
+      "normalized": "natives/STM/player/JRRB/J017/JRbody017.chain.48",
+      "source_sha256": "f4f967521f43d8e94f5381da93b385329cafde0c0a76f5bb3bee4b47770aeb70",
+      "normalized_sha256": "f4f967521f43d8e94f5381da93b385329cafde0c0a76f5bb3bee4b47770aeb70",
+      "byte_identical": true
+    },
+    {
+      "source": "natives/STM/player/zhst/z017/stbody024.mdf2.23",
+      "normalized": "natives/STM/player/JRRB/J017/JRbody017.mdf2.23",
+      "source_sha256": "601943fcbc626cc88ab961a3b41a17457f643d1b5cf182d2d31e667324215208",
+      "normalized_sha256": "601943fcbc626cc88ab961a3b41a17457f643d1b5cf182d2d31e667324215208",
+      "byte_identical": true
+    },
+    {
+      "source": "natives/STM/player/zhst/z017/stbody024.mesh.2109148288",
+      "normalized": "natives/STM/player/JRRB/J017/JRbody017.mesh.2109148288",
+      "source_sha256": "eb4d33f8c762f3032a7608f967b18efe8aae75f223c2ce73ae50b4b69ef8407f",
+      "normalized_sha256": "eb4d33f8c762f3032a7608f967b18efe8aae75f223c2ce73ae50b4b69ef8407f",
+      "byte_identical": true
+    },
+    {
+      "source": "natives/STM/player/zhst/z017/sthelm024.chain.48",
+      "normalized": "natives/STM/player/JRRB/J017/JRhelm017.chain.48",
+      "source_sha256": "f4f967521f43d8e94f5381da93b385329cafde0c0a76f5bb3bee4b47770aeb70",
+      "normalized_sha256": "f4f967521f43d8e94f5381da93b385329cafde0c0a76f5bb3bee4b47770aeb70",
+      "byte_identical": true
+    },
+    {
+      "source": "natives/STM/player/zhst/z017/sthelm024.mdf2.23",
+      "normalized": "natives/STM/player/JRRB/J017/JRhelm017.mdf2.23",
+      "source_sha256": "601943fcbc626cc88ab961a3b41a17457f643d1b5cf182d2d31e667324215208",
+      "normalized_sha256": "601943fcbc626cc88ab961a3b41a17457f643d1b5cf182d2d31e667324215208",
+      "byte_identical": true
+    },
+    {
+      "source": "natives/STM/player/zhst/z017/sthelm024.mesh.2109148288",
+      "normalized": "natives/STM/player/JRRB/J017/JRhelm017.mesh.2109148288",
+      "source_sha256": "eb4d33f8c762f3032a7608f967b18efe8aae75f223c2ce73ae50b4b69ef8407f",
+      "normalized_sha256": "eb4d33f8c762f3032a7608f967b18efe8aae75f223c2ce73ae50b4b69ef8407f",
+      "byte_identical": true
+    },
+    {
+      "source": "natives/STM/player/zhst/z017/sthelm024.user.2",
+      "normalized": "natives/STM/player/JRRB/J017/JRhelm017.user.2",
+      "source_sha256": "d444b2af1dc0765eddeeb4c7d114c703315be812be619f2ce02dc55708160d2b",
+      "normalized_sha256": "d444b2af1dc0765eddeeb4c7d114c703315be812be619f2ce02dc55708160d2b",
+      "byte_identical": true
+    },
+    {
+      "source": "natives/STM/player/zhst/z017/stwst024.chain.48",
+      "normalized": "natives/STM/player/JRRB/J017/JRwst017.chain.48",
+      "source_sha256": "9604365ae6261e214616e75974e629796d00867619f5b2a0d580046960fdc02a",
+      "normalized_sha256": "9604365ae6261e214616e75974e629796d00867619f5b2a0d580046960fdc02a",
+      "byte_identical": true
+    },
+    {
+      "source": "natives/STM/player/zhst/z017/stwst024.mdf2.23",
+      "normalized": "natives/STM/player/JRRB/J017/JRwst017.mdf2.23",
+      "source_sha256": "712992ce0202baa644fe517fb7b3e42c59e1da3e45d1be1b03d6c7102728a6f5",
+      "normalized_sha256": "712992ce0202baa644fe517fb7b3e42c59e1da3e45d1be1b03d6c7102728a6f5",
+      "byte_identical": true
+    },
+    {
+      "source": "natives/STM/player/zhst/z017/stwst024.mesh.2109148288",
+      "normalized": "natives/STM/player/JRRB/J017/JRwst017.mesh.2109148288",
+      "source_sha256": "f576a678db0f593eeb484113192df91aa3dd94bb06cf321383971395366c9f1c",
+      "normalized_sha256": "f576a678db0f593eeb484113192df91aa3dd94bb06cf321383971395366c9f1c",
+      "byte_identical": true
+    }
+  ],
+  "dummy_resource_validation": {
+    "chain.48": {
+      "files": [
+        "natives/STM/player/JRRB/J017/JRarm017.chain.48",
+        "natives/STM/player/JRRB/J017/JRbody017.chain.48",
+        "natives/STM/player/JRRB/J017/JRhelm017.chain.48"
+      ],
+      "hashes": [
+        "f4f967521f43d8e94f5381da93b385329cafde0c0a76f5bb3bee4b47770aeb70",
+        "f4f967521f43d8e94f5381da93b385329cafde0c0a76f5bb3bee4b47770aeb70",
+        "f4f967521f43d8e94f5381da93b385329cafde0c0a76f5bb3bee4b47770aeb70"
+      ],
+      "all_identical": true
+    },
+    "mdf2.23": {
+      "files": [
+        "natives/STM/player/JRRB/J017/JRarm017.mdf2.23",
+        "natives/STM/player/JRRB/J017/JRbody017.mdf2.23",
+        "natives/STM/player/JRRB/J017/JRhelm017.mdf2.23"
+      ],
+      "hashes": [
+        "601943fcbc626cc88ab961a3b41a17457f643d1b5cf182d2d31e667324215208",
+        "601943fcbc626cc88ab961a3b41a17457f643d1b5cf182d2d31e667324215208",
+        "601943fcbc626cc88ab961a3b41a17457f643d1b5cf182d2d31e667324215208"
+      ],
+      "all_identical": true
+    },
+    "mesh.2109148288": {
+      "files": [
+        "natives/STM/player/JRRB/J017/JRarm017.mesh.2109148288",
+        "natives/STM/player/JRRB/J017/JRbody017.mesh.2109148288",
+        "natives/STM/player/JRRB/J017/JRhelm017.mesh.2109148288"
+      ],
+      "hashes": [
+        "eb4d33f8c762f3032a7608f967b18efe8aae75f223c2ce73ae50b4b69ef8407f",
+        "eb4d33f8c762f3032a7608f967b18efe8aae75f223c2ce73ae50b4b69ef8407f",
+        "eb4d33f8c762f3032a7608f967b18efe8aae75f223c2ce73ae50b4b69ef8407f"
+      ],
+      "all_identical": true
+    }
+  },
+  "luabone_files": [
+    "reframework/data/LUABoneSystem/custom/JRarm017.json",
+    "reframework/data/LUABoneSystem/custom/JRbody017.json",
+    "reframework/data/LUABoneSystem/custom/JRhelm017.json",
+    "reframework/data/LUABoneSystem/custom/JRwst017.json"
+  ],
+  "luabone_hashes": [
+    "a04883bd45a39875a204ecf7ce3e61ddbf94104d90f112da7a9d844fcb60c3ff",
+    "a04883bd45a39875a204ecf7ce3e61ddbf94104d90f112da7a9d844fcb60c3ff",
+    "a04883bd45a39875a204ecf7ce3e61ddbf94104d90f112da7a9d844fcb60c3ff",
+    "a04883bd45a39875a204ecf7ce3e61ddbf94104d90f112da7a9d844fcb60c3ff"
+  ],
+  "luabone_all_identical": true,
+  "texture_refs_in_JRwst017_mdf2": [
+    "dddder4/npc746/body_ALBA.tex",
+    "dddder4/npc746/eyetail_ALBA.tex",
+    "dddder4/npc746/face_ALBA.tex",
+    "dddder4/npc746/hair_ALBA.tex"
+  ],
+  "pfb_refs": {
+    "natives/STM/player/prefab/mod/f/pl423/f_arm423.pfb.17": [
+      "player/JRRB/J017/JRarm017.mesh",
+      "player/JRRB/J017/JRarm017.mdf2",
+      "player/JRRB/J017/JRarm017.chain",
+      "player/JRRB/J017/JRarm017.mesh",
+      "player/JRRB/J017/JRarm017.mdf2",
+      "player/JRRB/J017/JRarm017.chain"
+    ],
+    "natives/STM/player/prefab/mod/f/pl423/f_body423.pfb.17": [
+      "player/JRRB/J017/JRbody017.mesh",
+      "player/JRRB/J017/JRbody017.mdf2",
+      "player/JRRB/J017/JRbody017.chain",
+      "player/JRRB/J017/JRbody017.mesh",
+      "player/JRRB/J017/JRbody017.mdf2",
+      "player/JRRB/J017/JRbody017.chain"
+    ],
+    "natives/STM/player/prefab/mod/f/pl423/f_helm423.pfb.17": [
+      "player/JRRB/J017/JRhelm017.mesh",
+      "player/JRRB/J017/JRhelm017.mdf2",
+      "player/JRRB/J017/JRhelm017.chain",
+      "player/JRRB/J017/JRhelm017.user",
+      "player/JRRB/J017/JRhelm017.user",
+      "player/JRRB/J017/JRhelm017.mesh",
+      "player/JRRB/J017/JRhelm017.mdf2",
+      "player/JRRB/J017/JRhelm017.chain"
+    ],
+    "natives/STM/player/prefab/mod/f/pl423/f_leg423.pfb.17": [
+      "player/JRRB/J017/JRarm017.mesh",
+      "player/JRRB/J017/JRarm017.mdf2",
+      "player/JRRB/J017/JRarm017.chain",
+      "player/JRRB/J017/JRarm017.mesh",
+      "player/JRRB/J017/JRarm017.mdf2",
+      "player/JRRB/J017/JRarm017.chain"
+    ],
+    "natives/STM/player/prefab/mod/f/pl423/f_wst423.pfb.17": [
+      "player/JRRB/J017/JRwst017.mesh",
+      "player/JRRB/J017/JRwst017.mdf2",
+      "player/JRRB/J017/JRwst017.chain",
+      "player/JRRB/J017/JRwst017.mesh",
+      "player/JRRB/J017/JRwst017.mdf2",
+      "player/JRRB/J017/JRwst017.chain"
+    ]
+  },
+  "ingame_validation": "PENDING"
+}

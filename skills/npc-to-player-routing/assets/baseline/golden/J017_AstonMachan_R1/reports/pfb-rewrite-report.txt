@@ -1,0 +1,56 @@
+J017 Golden Candidate R1 - PFB rewrite report
+================================================================
+
+natives/STM/player/prefab/mod/f/pl423/f_arm423.pfb.17
+  size: 1592 -> 1592 (unchanged=True)
+  zhst->JRRB: 6 occurrence(s)
+  z017->J017: 6 occurrence(s)
+  starm024->JRarm017: 7 occurrence(s)
+  changed bytes: 58
+  residual old tokens: none
+  unexpected changed bytes: 0
+
+natives/STM/player/prefab/mod/f/pl423/f_body423.pfb.17
+  size: 1624 -> 1624 (unchanged=True)
+  zhst->JRRB: 6 occurrence(s)
+  z017->J017: 6 occurrence(s)
+  stbody024->JRbody017: 7 occurrence(s)
+  changed bytes: 58
+  residual old tokens: none
+  unexpected changed bytes: 0
+
+natives/STM/player/prefab/mod/f/pl423/f_helm423.pfb.17
+  size: 1536 -> 1536 (unchanged=True)
+  zhst->JRRB: 8 occurrence(s)
+  z017->J017: 8 occurrence(s)
+  sthelm024->JRhelm017: 9 occurrence(s)
+  changed bytes: 76
+  residual old tokens: none
+  unexpected changed bytes: 0
+
+natives/STM/player/prefab/mod/f/pl423/f_leg423.pfb.17
+  size: 1592 -> 1592 (unchanged=True)
+  zhst->JRRB: 6 occurrence(s)
+  z017->J017: 6 occurrence(s)
+  starm024->JRarm017: 7 occurrence(s)
+  changed bytes: 58
+  residual old tokens: none
+  unexpected changed bytes: 0
+
+natives/STM/player/prefab/mod/f/pl423/f_wst423.pfb.17
+  size: 1616 -> 1616 (unchanged=True)
+  zhst->JRRB: 6 occurrence(s)
+  z017->J017: 6 occurrence(s)
+  stwst024->JRwst017: 7 occurrence(s)
+  changed bytes: 58
+  residual old tokens: none
+  unexpected changed bytes: 0
+
+Binding facts:
+  f_arm423 -> JRarm017
+  f_body423 -> JRbody017
+  f_helm423 -> JRhelm017 (+ JRhelm017.user)
+  f_leg423 -> JRarm017  [intentional Golden behavior; no JRleg017]
+  f_wst423 -> JRwst017  [actual full-body mesh]
+
+Static status: PASS

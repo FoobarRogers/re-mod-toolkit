@@ -1,0 +1,11 @@
+interface:
+  display_name: REFramework API 参考
+  short_description: 查证 REFramework 平台 API 签名与语义——从零编写或引入新 API 调用时，按索引单页取用官方文档
+  default_prompt: Use $reframework-api-reference to verify the REFramework API signatures before writing this call.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

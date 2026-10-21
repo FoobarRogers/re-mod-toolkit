@@ -1,0 +1,14 @@
+interface:
+  display_name: Mod 视觉验收
+  short_description: 调度视觉分析工具比较截图录屏并输出标准化的模组验收结论
+  default_prompt: Use $mod-visual-validation to compare this baseline and candidate
+    visually.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

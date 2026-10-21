@@ -1,0 +1,14 @@
+interface:
+  display_name: RE Engine 资源诊断
+  short_description: 分层定位模型、骨骼、材质、贴图、PFB 与加载问题
+  default_prompt: Use $reengine-asset-diagnosis to locate the layer causing this RE
+    Engine mod issue.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

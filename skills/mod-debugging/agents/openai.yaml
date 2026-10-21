@@ -1,0 +1,13 @@
+interface:
+  display_name: Mod 日志诊断
+  short_description: 从日志条目与少量上下文定位需要还原运行过程的问题
+  default_prompt: Use $mod-debugging to diagnose this REFramework or Lua log.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

@@ -1,0 +1,72 @@
+[
+  {
+    "file": "natives/STM/player/prefab/mod/f/pl423/f_arm423.pfb.17",
+    "size_before": 1592,
+    "size_after": 1592,
+    "mapping_counts": {
+      "zhst->JRRB": 6,
+      "z017->J017": 6,
+      "starm024->JRarm017": 7
+    },
+    "residual_old_tokens": {},
+    "changed_byte_count": 58,
+    "unexpected_changed_byte_count": 0,
+    "unexpected_changed_offsets": []
+  },
+  {
+    "file": "natives/STM/player/prefab/mod/f/pl423/f_body423.pfb.17",
+    "size_before": 1624,
+    "size_after": 1624,
+    "mapping_counts": {
+      "zhst->JRRB": 6,
+      "z017->J017": 6,
+      "stbody024->JRbody017": 7
+    },
+    "residual_old_tokens": {},
+    "changed_byte_count": 58,
+    "unexpected_changed_byte_count": 0,
+    "unexpected_changed_offsets": []
+  },
+  {
+    "file": "natives/STM/player/prefab/mod/f/pl423/f_helm423.pfb.17",
+    "size_before": 1536,
+    "size_after": 1536,
+    "mapping_counts": {
+      "zhst->JRRB": 8,
+      "z017->J017": 8,
+      "sthelm024->JRhelm017": 9
+    },
+    "residual_old_tokens": {},
+    "changed_byte_count": 76,
+    "unexpected_changed_byte_count": 0,
+    "unexpected_changed_offsets": []
+  },
+  {
+    "file": "natives/STM/player/prefab/mod/f/pl423/f_leg423.pfb.17",
+    "size_before": 1592,
+    "size_after": 1592,
+    "mapping_counts": {
+      "zhst->JRRB": 6,
+      "z017->J017": 6,
+      "starm024->JRarm017": 7
+    },
+    "residual_old_tokens": {},
+    "changed_byte_count": 58,
+    "unexpected_changed_byte_count": 0,
+    "unexpected_changed_offsets": []
+  },
+  {
+    "file": "natives/STM/player/prefab/mod/f/pl423/f_wst423.pfb.17",
+    "size_before": 1616,
+    "size_after": 1616,
+    "mapping_counts": {
+      "zhst->JRRB": 6,
+      "z017->J017": 6,
+      "stwst024->JRwst017": 7
+    },
+    "residual_old_tokens": {},
+    "changed_byte_count": 58,
+    "unexpected_changed_byte_count": 0,
+    "unexpected_changed_offsets": []
+  }
+]
