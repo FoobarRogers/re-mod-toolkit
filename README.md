@@ -24,6 +24,18 @@ Mod 开发 skill、视频帧 diff MCP 工具整合为单一可版本管理的分
    ZCode → Plugin Marketplace → Add marketplace → 粘贴 clone 出的目录路径 → Install → Enable。
 2. **本地路径安装**：不 clone，直接把仓库 ZIP 解压目录（或本地已有副本）粘给 Add marketplace。
 
+## Agents 的模型绑定（首次使用前检查）
+
+三个 subagent 中，`data-researcher` 未绑定模型（跟随当前会话模型），开箱即用；
+`glm-review` 与 `deepseek-review` 的 frontmatter 各自绑定了作者环境的模型账户：
+
+- `agents/glm-review.md` → `model: bigmodel-api/GLM-5.3-Flash`（智谱 bigmodel 账户）
+- `agents/deepseek-review.md` → `model: 804526c5-3629-49fa-aab1-34c614471382/deepseek-flash`（DeepSeek 供应商账户）
+
+调用时报"余额不足 / 无可用资源包"类错误即账户侧未就绪。按自己的可用渠道修改对应
+`.md` 的 `model` 字段（换成自己账户下的模型 ID），然后按"版本管理与更新流程"重新分发；
+直接改插件缓存里的同名文件可临时应急，但下次 Update 会被覆盖。
+
 ## 版本管理与更新流程
 
 1. 修改源码。
