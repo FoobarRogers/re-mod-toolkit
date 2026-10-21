@@ -5,8 +5,8 @@
 ## 行为
 
 - `Read`：目标普通文件大于 **64 KiB** 时，阻止直接整文件读取。
-- `Read`：glm-vision MCP 产出的**视觉证据图**放宽到 **256 KiB**——文件为 `.jpg` / `.jpeg` / `.png` / `.webp` 且满足任一：文件名含 `_spike` 或 `_marked`、路径含 `glm_vision_marks`。普通图片不放宽，仍按 64 KiB。
-- 豁免模式与 glm-vision MCP 产物命名的对应（2026-10-09 MCP 已压缩为仅 `analyze_video_diff`）：尖峰对比图 `*_spikeN_*.jpg`（full/zoom）与 grounding 标注图 `*_spike1_glm_marked.jpg` 均命中 `_spike`；MCP 出图硬上限 256 KiB（`_save_jpeg_small`）与豁免档一致。`glm_vision_marks` 目录是已删除的 `analyze_video_deep` 的旧产物路径，模式保留只为兼容历史文件。
+- `Read`：glm-vision MCP 产出的**视觉证据图**放宽到 **256 KiB**——文件为 `.jpg` / `.jpeg` / `.png` / `.webp` 且满足任一：文件名含 `_spike` 或 `_probe` 或 `_marked`、路径含 `glm_vision_marks`。普通图片不放宽，仍按 64 KiB。
+- 豁免模式与 glm-vision MCP 产物命名的对应（0.2.0 起为双工具 `probe_frame` + `analyze_video_diff`，零模型依赖）：尖峰对比图 `*_spikeN_*.jpg`（full/zoom）与主体标注帧图 `*_probe_*.jpg` 均命中豁免；`_marked` 只为兼容 grounding 时代的旧产物（0.2.0 已移除该功能）。MCP 出图硬上限 256 KiB（`_save_jpeg_small`）与豁免档一致。`glm_vision_marks` 目录是已删除的 `analyze_video_deep` 的旧产物路径，模式保留只为兼容历史文件。
 - `Bash`：阻止明显会把整个大文件直接打到 stdout 的 `cat` / `type` / `more` / `Get-Content` / `gc`，阈值同样按普通 64 KiB / 视觉证据 256 KiB 区分。
 - 判断完全不依赖文件内容；`.json`、`.bin`、`.528`、`.pfb`、`.mesh`、自定义后缀、无后缀都按实际文件大小处理。
 - `grep` / `rg` / `jq` / Python / SQLite / 项目已有解析器等本地过滤与索引操作继续允许。

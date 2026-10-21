@@ -5,7 +5,7 @@ description: "对照基线检查 Mod 截图或录屏。用于模型、材质、�
 
 # Mod Visual Validation
 
-Use `analyze_video_diff` (the only tool of the GLM vision MCP) as the video engine: it pixel-diffs the recording, localizes the spike frame pairs where the picture changes, and writes side-by-side annotated JPEGs. Read those JPEGs yourself and give the semantic analysis (what changed and why); the tool does localization, the main model does interpretation. Still images are Read by the main model directly. This skill defines the comparison protocol; it does not duplicate vision algorithms and does not modify the supplied media.
+Use the `glm-vision` MCP as the video engine: `analyze_video_diff` pixel-diffs the recording, localizes the spike frame pairs where the picture changes, and writes side-by-side annotated JPEGs. Read those JPEGs yourself and give the semantic analysis (what changed and why). The MCP server does pure pixel work and calls no vision model — subject localization is also yours: when you need subject-focused analysis, first run `probe_frame`, Read the returned frame, locate the main character/subject yourself, and pass its pixel box (`x,y,w,h`) as `subject` to `analyze_video_diff`. Still images are Read by the main model directly. This skill defines the comparison protocol; it does not duplicate vision algorithms and does not modify the supplied media.
 
 ## Define the comparison
 
@@ -27,7 +27,7 @@ Use the smallest sufficient set:
 - animation, jitter, floating, transition: the relevant recording interval or matched frames;
 - distant face or silhouette readability: one near and one representative far view.
 
-For video, run `analyze_video_diff` on the recording: its report already includes duration, frame rate, and the spike list with timestamps (pulse = isolated defect candidate, action = normal fast motion), and it writes annotated comparison JPEGs for each spike. Read those JPEGs, judge whether the flagged spikes explain the reported defect, and record the timestamps in the verdict.
+For video, run `analyze_video_diff` on the recording: its report already includes duration, frame rate, and the spike list with timestamps (pulse = isolated defect candidate, action = normal fast motion), and it writes annotated comparison JPEGs for each spike. When background motion drowns the subject, rerun with `subject` obtained via `probe_frame` (annotate the frame yourself). Read those JPEGs, judge whether the flagged spikes explain the reported defect, and record the timestamps in the verdict.
 
 ## Produce a standardized verdict
 

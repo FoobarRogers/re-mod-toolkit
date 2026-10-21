@@ -122,6 +122,7 @@ def is_visual_evidence_file(path):
         return False
     return (
         "_spike" in name
+        or "_probe" in name
         or "_marked" in name
         or "glm_vision_marks" in norm
     )

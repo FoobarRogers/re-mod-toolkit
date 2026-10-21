@@ -1,29 +1,21 @@
-"""视频 diff 定位 MCP server(唯一的工具是 analyze_video_diff)。
+"""视频 diff 定位 MCP server(零模型依赖, 纯本地像素计算)。
 
 像素级 diff 扫描本地视频, 定位画面突变的帧对并产出标注对比图;
 语义分析(不连贯的原因是什么)由主模型直接 Read 对比图完成。
-本 server 有意不注册"把画面交给视觉模型问答"的工具——那类调用
-(多帧 + 视觉模型)耗时远超 MCP 工具超时, 曾是 timeout 的主要来源。
 
-diff 工具内部仅在主体定位(focus=auto)和可选 grounding(mark_glm)时
-各发一次廉价 GLM 请求, 不做整段视频的画面问答。
+主体定位同样归主模型: probe_frame 抽一帧回传路径, 主模型看图标注主体框,
+再作为 subject 参数回传, 本 server 沿用固定外扩链(15% 容错边距 -> 50% 宽框
+ROI -> 20% 紧框过滤)在 ROI 内 diff。本 server 不发起任何网络请求, 无凭据。
 
-环境变量:
-  ZHIPU_API_KEY  可选。缺失时 focus=auto 自动降级为全画面纯像素 diff,
-                 mark_glm 被忽略; 配置后仅用于主体定位与可选 grounding
-                 (各一次廉价请求), diff 扫描本体始终零 API 费用
-  ZHIPU_MODEL    视觉模型名, 默认 glm-4.6v(可换 glm-4.5v / glm-5.3-flash 等, 同一 key 通用)
+两个工具:
+  probe_frame          抽单帧供主模型标注主体(工作流第一步)
+  analyze_video_diff   diff 扫描主体 ROI 或全画面, 定位突变帧对(第二步)
 """
 
-import base64
-import json
 import os
 import re
 import subprocess
 import sys
-import tempfile
-import urllib.error
-import urllib.request
 
 import imageio_ffmpeg
 from mcp.server.fastmcp import FastMCP
@@ -39,56 +31,8 @@ except ImportError:
 sys.stdout.reconfigure(encoding="utf-8")
 
 FFMPEG = imageio_ffmpeg.get_ffmpeg_exe()
-API_URL = "https://open.bigmodel.cn/api/paas/v4/chat/completions"
-API_KEY = os.environ.get("ZHIPU_API_KEY", "")
-DEFAULT_MODEL = os.environ.get("ZHIPU_MODEL", "glm-4.6v")
-
-BOX_COLORS = ["#FF3B30", "#FF9500", "#AF52DE", "#34C759", "#007AFF"]
 
 mcp = FastMCP("glm-vision")
-
-SYSTEM_PROMPT = (
-    "你是一名严谨的视觉内容分析助手。按顺序观看画面, 只依据用户的问题"
-    "如实描述和分析可见内容: 问题要描述就给描述, 要定位问题就给定位, 要判断就给判断。"
-    "不要引入画面之外的领域先验, 画面中无法确认的事明确说看不出来。"
-)
-
-
-def _call_glm(model: str, content: list) -> str:
-    req = urllib.request.Request(
-        API_URL,
-        headers={
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {API_KEY}",
-        },
-    )
-    data = None
-    # 依次尝试: 关闭思考(4.5V/4.6V 支持) -> 降低思考力度(5.x 始终思考的模型)
-    for thinking in ({"type": "disabled"}, {"effort": "low"}, None):
-        body = {
-            "model": model,
-            "messages": [
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": content},
-            ],
-            # 思考模型可能把大量 token 花在推理上, 预算太小会导致正文为空
-            "max_tokens": 16384,
-        }
-        if thinking:
-            body["thinking"] = thinking
-        req.data = json.dumps(body).encode("utf-8")
-        try:
-            with urllib.request.urlopen(req, timeout=300) as resp:
-                data = json.loads(resp.read().decode("utf-8"))
-            break
-        except urllib.error.HTTPError as e:
-            if e.code == 400 and b"1210" in e.read() and thinking is not None:
-                continue  # 该模型不支持此思考配置, 换下一种
-            raise
-    msg = data["choices"][0]["message"]
-    # 正文为空时兜底取思考内容, 避免静默返回空字符串
-    return ((msg.get("content") or "").strip()
-            or (msg.get("reasoning_content") or "").strip())
 
 
 def _probe(video_path: str) -> dict:
@@ -136,52 +80,7 @@ def _extract_frame(video_path: str, t: float, out_path: str, crop=None, scale_w=
     raise ValueError(f"在 {t:.2f}s 抽帧失败: {proc.stderr[-300:]}")
 
 
-def _encode_image(path: str) -> str:
-    with open(path, "rb") as f:
-        return base64.b64encode(f.read()).decode()
-
-
-def _get_subject_box(video_path: str, info: dict, model: str, t: float = None):
-    """用一帧廉价询问视觉模型拿到主体边界框, 返回像素坐标 (x, y, w, h) 或 None。
-
-    t 缺省取视频中间帧; 主体会移动的素材可传尖峰时刻重新定位。
-    """
-    w, h = (int(v) for v in info["resolution"].split("x"))
-    with tempfile.TemporaryDirectory() as tmp:
-        frame = os.path.join(tmp, "box.jpg")
-        _extract_frame(video_path, info["duration_sec"] * 0.5 if t is None else t, frame)
-        content = [
-            {"type": "text", "text":
-                "找出画面中的主要人物/角色(动画主体)。只输出其边界框: 4个0到999的整数, "
-                "格式: x1,y1,x2,y2 (左上角和右下角, 相对画面宽高的比例坐标乘999)。"
-                "画面中没有明确主体人物则只输出: none"},
-            {"type": "image_url", "image_url": {"url": "data:image/jpeg;base64," + _encode_image(frame)}},
-        ]
-    try:
-        txt = _call_glm(model, content)
-    except Exception:
-        return None
-    m = re.search(r"(\d{1,3})\D{1,4}(\d{1,3})\D{1,4}(\d{1,3})\D{1,4}(\d{1,3})", txt)
-    if not m:
-        return None
-    x1, y1, x2, y2 = (max(0, min(999, int(v))) for v in m.groups())
-    if x2 <= x1 or y2 <= y1:
-        return None
-    px1, px2 = x1 / 999 * w, x2 / 999 * w
-    py1, py2 = y1 / 999 * h, y2 / 999 * h
-    mx, my = (px2 - px1) * 0.15, (py2 - py1) * 0.15  # 15% 边距防框偏
-    bx1 = max(0, int(px1 - mx))
-    by1 = max(0, int(py1 - my))
-    bw = min(w, int(px2 + mx)) - bx1
-    bh = min(h, int(py2 + my)) - by1
-    if bw < 16 or bh < 16:
-        return None
-    return (bx1, by1, bw, bh)
-
-
 def _check_common(video_path: str):
-    # key 不在这里拦: analyze_video_diff 无 key 时降级为纯像素全画面 diff,
-    # key 只在 focus=auto 主体定位与 mark_glm grounding 两处消费
     if not os.path.isfile(video_path):
         return f"错误: 文件不存在: {video_path}"
     return None
@@ -241,107 +140,6 @@ def _save_jpeg_small(img: Image.Image, out_path: str,
             return p
 
     return p
-
-
-def _draw_boxes(img_path: str, boxes: list, labels: list, out_path: str,
-                max_width: int = 0) -> str:
-    """在图片上画出标注框(坐标为像素值), 可选缩放后保存。"""
-    img = Image.open(img_path).convert("RGB")
-    w, h = img.size
-    draw = ImageDraw.Draw(img)
-    lw = max(2, round(min(w, h) / 250))
-    font = _load_font(max(14, round(min(w, h) / 30)))
-    for i, (x1, y1, x2, y2) in enumerate(boxes):
-        color = BOX_COLORS[i % len(BOX_COLORS)]
-        draw.rectangle([x1, y1, x2, y2], outline=color, width=lw)
-        label = labels[i] if i < len(labels) and labels[i] else f"#{i + 1}"
-        tb = draw.textbbox((0, 0), label, font=font)
-        tw, th = tb[2] - tb[0], tb[3] - tb[1]
-        ty = y1 - th - lw * 5
-        if ty < 0:  # 顶部放不下标签时移到框下方
-            ty = min(y2 + lw * 2, h - th - lw * 3)
-        draw.rectangle([x1, ty - lw, x1 + tw + lw * 5, ty + th + lw], fill=color)
-        draw.text((x1 + lw * 2.5, ty - tb[1]), label, font=font, fill="white")
-    if max_width and w > max_width:
-        img = img.resize((max_width, round(h * max_width / w)), Image.LANCZOS)
-    if out_path.lower().endswith(".png"):  # PNG 对游戏画面压不动, 转自适应 JPEG
-        out_path = _save_jpeg_small(img, os.path.splitext(out_path)[0] + ".jpg")
-    else:
-        img.save(out_path)
-    return out_path
-
-
-def _mark_region_impl(image_paths: list[str], question: str, output_path: str,
-                      max_width: int) -> str:
-    if not API_KEY:
-        return "错误: 未设置 ZHIPU_API_KEY 环境变量, 请在 ZCode 的 MCP 配置中填写。"
-    if not image_paths:
-        return "错误: image_paths 为空"
-    for p in image_paths:
-        if not os.path.isfile(p):
-            return f"错误: 文件不存在: {p}"
-
-    base = image_paths[-1]  # 标注画在最后一张(基准图)上
-    try:
-        with Image.open(base) as im:
-            w, h = im.size
-    except Exception as e:
-        return f"错误: 无法读取基准图 {base}: {e}"
-    if not output_path:
-        root, _ = os.path.splitext(base)
-        output_path = root + "_marked.png"
-    output_path = os.path.abspath(output_path)
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-
-    multi = len(image_paths) > 1
-    ask = (f"任务: {question}\n\n"
-           "定位规则: 先用简洁中文说明每个标注区域是什么/为什么标它, 然后"
-           "每个区域单独一行, 严格按格式输出: BOX: x1,y1,x2,y2 | 短标签\n"
-           "坐标是 0~999 的整数(相对图宽高的比例坐标乘999), x1,y1 为左上角, "
-           "x2,y2 为右下角; 短标签 2~8 个字。找不到目标就不输出 BOX 行, 说明原因。\n"
-           + (f"共 {len(image_paths)} 张图, 按顺序编号; BOX 坐标一律基于"
-              f"最后一张(基准图)的画面。" if multi else "BOX 坐标基于这张图的画面。"))
-    content = [{"type": "text", "text": ask}]
-    for i, p in enumerate(image_paths):
-        if multi:
-            content.append({"type": "text", "text": f"[图{i}] {os.path.basename(p)}"
-                             + ("(基准图)" if i == len(image_paths) - 1 else "")})
-        content.append({
-            "type": "image_url",
-            "image_url": {"url": "data:image/jpeg;base64," + _encode_image(p)},
-        })
-
-    text = _call_glm(DEFAULT_MODEL, content) or ""
-    found = re.findall(
-        r"BOX:\s*(\d{1,5})\D{1,4}(\d{1,5})\D{1,4}(\d{1,5})\D{1,4}(\d{1,5})"
-        r"(?:\s*[|｜]\s*([^\n]{1,20}))?", text)
-    if not found:
-        return ("视觉模型没有给出任何 BOX 坐标, 说明如下, 请调整 question 重试或"
-                f"直接参考:\n{text.strip()}")
-
-    boxes, labels = [], []
-    for x1, y1, x2, y2, lb in found:
-        x1, y1, x2, y2 = (int(v) for v in (x1, y1, x2, y2))
-        if max(x1, y1, x2, y2) > 999:  # 模型违约输出了像素坐标, 直接使用
-            px = (x1, y1, x2, y2)
-        else:
-            px = (round(x1 / 999 * w), round(y1 / 999 * h),
-                  round(x2 / 999 * w), round(y2 / 999 * h))
-        px = (max(0, min(w - 1, px[0])), max(0, min(h - 1, px[1])),
-              max(0, min(w - 1, px[2])), max(0, min(h - 1, px[3])))
-        if px[2] - px[0] < 4 or px[3] - px[1] < 4:
-            continue
-        boxes.append(px)
-        labels.append((lb or "").strip()[:16])
-
-    if not boxes:
-        return ("解析出的 BOX 坐标全部无效(宽高不足 4px), 模型说明如下:\n" + text.strip())
-
-    _draw_boxes(base, boxes, labels, output_path, max_width)
-    note = (f"标注图已生成: {output_path}\n基准图: {base} ({w}x{h}, "
-            f"共 {len(boxes)} 个标注框, 画在{'最后一张图' if multi else '该图'}上)\n\n"
-            f"视觉模型的定位说明:\n{text.strip()}")
-    return note
 
 
 # ===== diff 尖峰定位: 像素级扫描替代视觉模型粗扫, 标注图压到主模型可读 =====
@@ -496,39 +294,65 @@ def _diff_zoom_image(a, b, box, title: str, out_path: str) -> str:
     return _save_jpeg_small(canvas, out_path, start_w=1100)
 
 
+def _resolution(info: dict) -> tuple:
+    r = info.get("resolution", "unknown")
+    try:
+        w, h = (int(v) for v in r.split("x"))
+        return w, h
+    except ValueError:
+        raise ValueError(f"无法解析视频分辨率({r}), 该文件可能不受支持")
+
+
+def _parse_subject(subject: str, W: int, H: int):
+    """解析主模型标注的主体框 "x,y,w,h"(像素), 加 15% 边距防框偏。
+
+    返回 (box, err): box=(x, y, w, h) 像素元组, err 非 None 时 box 为 None。
+    """
+    nums = re.findall(r"-?\d+", subject)
+    if len(nums) != 4:
+        return None, (f"subject 需要 4 个整数 'x,y,w,h'(像素), 实得 {len(nums)} 个: "
+                      f"{subject.strip()!r}")
+    x, y, w, h = (int(v) for v in nums)
+    x, y = max(0, x), max(0, y)
+    w, h = min(w, W - x), min(h, H - y)
+    if w < 16 or h < 16:
+        return None, (f"subject 框过小或越界: 解析为 ({x},{y},{w},{h}) @ {W}x{H}, "
+                      "需要宽高 >= 16px 且在画面内")
+    mx, my = w * 0.15, h * 0.15  # 15% 边距防框偏(与旧 GLM 定位链一致)
+    bx1, by1 = max(0, int(x - mx)), max(0, int(y - my))
+    bw = min(W, int(x + w + mx)) - bx1
+    bh = min(H, int(y + h + my)) - by1
+    return (bx1, by1, bw, bh), None
+
+
 def _analyze_video_diff_impl(video_path: str, output_dir: str, max_spikes: int,
-                             mark_glm: bool, focus: str) -> str:
+                             subject: str) -> str:
     if not _CV2_OK:
         return "错误: 服务器 Python 环境缺少 opencv-python(pip install opencv-python numpy)"
     err = _check_common(video_path)
     if err:
         return err
-    # key 纯可选: 缺失时跳过仅有的两处 API 消费点(focus=auto 主体定位、mark_glm
-    # grounding), 整条 diff 扫描退化为零 API 费用的纯像素全画面模式
-    no_key_note = ""
-    if not API_KEY:
-        focus = "full"
-        mark_glm = False
-        no_key_note = ("未配置 ZHIPU_API_KEY: 已跳过主体定位(ROI)与 grounding, "
-                       "使用纯像素全画面 diff。\n\n")
-    # 主体定位提前到扫描前(focus=auto, 一次廉价 GLM 调用): diff 在主体外扩50%的
-    # ROI 内计算("对主体 diff")——背景动态不再抬高基线/稀释信号, 角色微小形变才
-    # 可检出; ROI 同时用于差异框过滤(背景火焰/UI 框滤掉)和对比图裁剪。
-    info = _probe(video_path)
-    W, H = (int(v) for v in info["resolution"].split("x"))
+    try:
+        info = _probe(video_path)
+        W, H = _resolution(info)
+    except ValueError as e:
+        return f"错误: {e}"
     sub = None
-    roi = None
-    if focus != "full":
-        sub = _get_subject_box(video_path, info, DEFAULT_MODEL)
-        if sub:
-            roi = _expand(*sub, 0.5, 0.5, W, H)
+    if subject.strip():
+        sub, sub_err = _parse_subject(subject, W, H)
+        if sub_err:
+            return f"错误: {sub_err}"
+    # 主体聚焦(subject 由主模型经 probe_frame 标注回传): diff 在主体外扩50%的
+    # ROI 内计算("对主体 diff")——背景动态不再抬高基线/稀释信号, 角色微小形变
+    # 才可检出; ROI 同时用于差异框过滤(外扩20%紧框)和对比图裁剪。
+    roi = _expand(*sub, 0.5, 0.5, W, H) if sub else None
     try:
         sc = _scan_spikes(video_path, roi)
     except ValueError as e:
         return f"错误: {e}"
     fps, n, med = sc["fps"], sc["n"], sc["med"]
     spikes = sc["spikes"]
-    # 主体ROI无尖峰: 可能角色已移出初始定位框。回退全画面二次扫描(零 API)兜底,
+    # 主体ROI无尖峰: 可能角色已移出标注框。回退全画面二次扫描(纯像素)兜底,
     # 防止把"角色不在ROI内"误报成"无异常"
     roi_fallback = False
     if not spikes and roi:
@@ -537,26 +361,23 @@ def _analyze_video_diff_impl(video_path: str, output_dir: str, max_spikes: int,
         roi_fallback = True
     stem = os.path.splitext(os.path.basename(video_path))[0]
     if not spikes:
-        scope = f"主体ROI {roi}" if roi else "全画面"
-        return (no_key_note
-                + f"== diff 扫描: {os.path.basename(video_path)} ({n} 帧 @ {fps:.0f}fps) ==\n"
+        scope = f"主体ROI {roi}" if roi and not roi_fallback else "全画面"
+        return (f"== diff 扫描: {os.path.basename(video_path)} ({n} 帧 @ {fps:.0f}fps) ==\n"
                 f"{scope} diff 平稳(中位 {med:.2f}, p99 {sc['p99']:.2f}), 无高于阈值的尖峰——"
                 "未检出孤立突变或异常动作段。")
     if not output_dir:
         output_dir = os.path.splitext(video_path)[0] + "_diff"
     os.makedirs(output_dir, exist_ok=True)
 
-    if focus == "full":
-        mode_note = "全画面模式(diff/过滤/出图均为全画面)"
-    elif roi_fallback:
-        mode_note = (f"主体ROI {roi} 内无尖峰, 已回退全画面扫描"
-                     f"(主体定位 {sub} 可能已过期, 差异不再按主体过滤)")
+    if roi_fallback:
+        mode_note = (f"标注主体ROI {roi} 内无尖峰, 已回退全画面扫描"
+                     "(主体可能已移动出框, 差异不再按主体过滤)")
         sub = None
     elif sub:
         mode_note = (f"主体聚焦模式(主体框 {sub}, ROI {roi}; diff 仅在 ROI 内计算, "
                      "差异框只保留与主体相交的)")
     else:
-        mode_note = "全画面模式(主体定位失败, 自动退回)"
+        mode_note = "全画面模式(未提供 subject, 背景动态也会被圈出)"
 
     shown = spikes[:max(1, max_spikes)]
     lines = [f"== diff 尖峰分析: {os.path.basename(video_path)} "
@@ -612,31 +433,23 @@ def _analyze_video_diff_impl(video_path: str, output_dir: str, max_spikes: int,
             # 主体聚焦: 过滤与裁剪职责分离——差异框过滤用主体框外扩20%的紧框
             # (挡住 ROI 内的背景动态, 如角色头顶的蒸汽), 出图裁剪仍用外扩50%的
             # 宽框(保留环境上下文)。中心判定拦住"尾巴碰到主体区"的底噪大连片。
-            # 紧框内无差异框时先按尖峰帧重定位主体(角色会移动); 重定位后仍无
-            # 角色相关差异, 判定背景动态不画框
             reg = _expand(*sub, 0.5, 0.5, W, H)
             freg = _expand(*sub, 0.2, 0.2, W, H)
             kept = [bx for bx in big if _inter_ratio(bx, freg) >= 0.2 and _center_in(bx, freg)]
-            if not kept:
-                sub2 = _get_subject_box(video_path, info, DEFAULT_MODEL, i2 / fps)
-                if sub2:
-                    freg = _expand(*sub2, 0.2, 0.2, W, H)
-                    reg = _expand(*sub2, 0.5, 0.5, W, H)
-                    kept = [bx for bx in big if _inter_ratio(bx, freg) >= 0.2 and _center_in(bx, freg)]
-                    if kept:
-                        note = "(主体已移动, 按尖峰帧重定位)"
             if kept:
                 dropped = [bx for bx in big
                            if not (_inter_ratio(bx, freg) >= 0.2 and _center_in(bx, freg))]
-                if dropped and not note:
+                if dropped:
                     note = f"(过滤主体外差异{len(dropped)}处)"
             else:
                 # kept 为空分两种情形, 报告要区分: 底噪把角色差异连进大连通域时
-                # (TAA/压缩伪影 + 真实变化连通), 不是"没有主体差异"而是"无法定位"
+                # (TAA/压缩伪影 + 真实变化连通), 不是"没有主体差异"而是"无法定位";
+                # 否则要么真是背景动态, 要么主体已移动出主模型标注的框
                 blob = [bx for bx in boxes if bx[2] * bx[3] > 0.15 * W * H
                         and _inter_ratio(bx, freg) >= 0.2]
                 note = ("(差异与背景底噪连片, 无法局部定位, 请直接对比前后帧)" if blob
-                        else "(脉冲差异未落在主体上, 判定为背景动态)")
+                        else "(脉冲差异未落在标注主体上: 背景动态, 或主体已移动出框——"
+                             f"可 probe_frame(t={i2 / fps:.3f}) 重新标注后重扫)")
         else:
             kept = big
         tag = "孤立脉冲·形变候选" if s["kind"] == "pulse" else "连续动作段"
@@ -657,57 +470,85 @@ def _analyze_video_diff_impl(video_path: str, output_dir: str, max_spikes: int,
             made.append(zp)
             entry += f"\n  差异放大: {zp} (最大差异区 {kept[0]})"
         lines.append(entry)
-    # 可选: GLM grounding 对 top1 脉冲做语义标注(付费一次, 默认关; 纯 bbox 已够定位)
-    if mark_glm and shown[0]["kind"] == "pulse":
-        i1, i2 = max(0, shown[0]["pk_f"] - 1), min(shown[0]["pk_f"], n - 1)
-        a, b = _extract_frame_pair(video_path, i1, i2)
-        tmpd = tempfile.mkdtemp(prefix="diffglm_")
-        pa = os.path.join(tmpd, "a.png")
-        pb = os.path.join(tmpd, "b.png")
-        Image.fromarray(cv2.cvtColor(a, cv2.COLOR_BGR2RGB)).save(pa)
-        Image.fromarray(cv2.cvtColor(b, cv2.COLOR_BGR2RGB)).save(pb)
-        mp = os.path.abspath(os.path.join(output_dir, f"{stem}_spike1_glm_marked.jpg"))
-        gtxt = _mark_region_impl([pa, pb],
-                                 "对比前后两帧, 只把第二帧中角色身上与第一帧不同的变化区域"
-                                 "标注出来, 忽略背景、特效和 UI 文字。",
-                                 mp, 800)
-        lines.append(f"GLM grounding 标注(top1 尖峰, 语义参考):\n{gtxt}")
-        made.append(mp)
     lines.append("阅读顺序: 先看各尖峰对比图(左=前帧 右=后帧, 绿框=像素差异区域), "
                  "形变候选再看放大图; 定位与分类由本工具负责, 结论由主模型看图给出。")
-    return no_key_note + "\n\n".join(lines)
+    return "\n\n".join(lines)
 
 
 @mcp.tool()
 def analyze_video_diff(video_path: str, output_dir: str = "", max_spikes: int = 6,
-                       mark_glm: bool = False, focus: str = "auto") -> str:
-    """像素级 diff 扫描视频, 定位画面突变的帧对并产出标注对比图(基本零 API 费用)。
+                       subject: str = "") -> str:
+    """视频 diff 工具: 像素级扫描画面突变帧对并产出标注对比图。不做视频内容理解。
 
     适合"找出画面异常发生在哪几帧"类任务: 动画循环接缝跳变、瞬间形变/穿模、
-    闪白闪烁等, 以及对整段验收素材做"有没有异常突变"的阴性筛查。
-    流程: 全片流式逐帧 diff(内存 O(1), 长视频安全) -> 尖峰聚类分类(孤立脉冲=
-    形变候选 / 连续动作段=镜头或动作的正常剧烈变化) -> 对每个尖峰按帧号抽前后
-    两帧, 用像素差异 bbox 在并排对比图上圈出变化区域 -> 输出压到主模型可读的
-    JPEG(视觉证据豁免档内), 主模型直接 Read 看图下结论。
-    focus=auto 时先定位角色主体并外扩50%框定 ROI, diff 在 ROI 内计算("对主体
-    diff"): 背景动态不参与基线, 角色微小形变可检出; 差异框只保留与主体相交的,
-    对比图裁剪到 ROI(角色占比大, 看细节清楚)。主体ROI无尖峰时自动回退全画面
-    二次扫描兜底, 角色移动出框时按尖峰帧重定位。定位归本工具, 语义判断归主模型。
-    判据是"孤立度"(峰值/邻域中位)而非绝对值: 运动素材镜头跟随会抬高全片基线,
-    孤立脉冲和动作段因此可分。
+    闪白闪烁等, 以及整段验收素材的"有没有异常突变"阴性筛查。本工具不理解、
+    不描述视频内容, 不要用于看剧情、视频问答、连续看画面等任务; 语义结论由
+    主模型 Read 对比图给出。
+
+    推荐工作流(画面有明确主体时):
+    1) probe_frame 抽一帧 -> 主模型 Read 帧图, 定位主要角色/主体;
+    2) 主体框以 subject="x,y,w,h"(像素) 传入本工具 -> diff 在主体外扩50%的
+       ROI 内计算: 背景动态不参与基线, 角色微小形变可检出; 差异框只保留与
+       主体相交的, 对比图裁剪到 ROI。ROI 内无尖峰时自动回退全画面二次扫描。
+    无 subject 时为全画面模式(背景动态也会被圈出), 适合快速筛查。
+    判据是"孤立度"(峰值/邻域中位)而非绝对值: 运动素材镜头跟随会抬高全片
+    基线, 孤立脉冲和动作段因此可分。
 
     Args:
         video_path: 视频文件绝对路径。
         output_dir: 对比图输出目录, 默认为视频同目录下 <视频名>_diff/。
         max_spikes: 最多产出的尖峰数(按 孤立脉冲优先→孤立度降序 排序), 默认 6。
-        mark_glm: true 时对 top1 孤立脉冲额外调一次 GLM grounding 圈语义差异
-            (花一次 API 费用; 默认 false, 纯像素 bbox 已够定位; 未配置
-            ZHIPU_API_KEY 时被忽略)。
-        focus: "auto"=先定位角色主体并外扩50%框定ROI, diff 在 ROI 内计算, 只圈
-            角色相关差异并裁剪出图(多花一次廉价 GLM 调用; 未配置 ZHIPU_API_KEY
-            时自动降级为 "full"); "full"=全画面不过滤(零费用, 背景动态也会被圈出)。
+        subject: 主体框像素坐标 "x,y,w,h"(probe_frame 工作流第二步, 见上);
+            省略时全画面扫描。
     """
-    return _analyze_video_diff_impl(video_path, output_dir, max_spikes, mark_glm, focus)
+    return _analyze_video_diff_impl(video_path, output_dir, max_spikes, subject)
+
+
+@mcp.tool()
+def probe_frame(video_path: str, t: str = "") -> str:
+    """抽取视频的单帧供主模型查看并标注主体(analyze_video_diff 工作流第一步)。
+
+    只抽一帧, 仅服务于"标注主体→ROI diff"流程。本工具不理解视频内容,
+    不要用于浏览视频、看剧情、连续抽帧等任务。
+    返回帧图路径 + 视频元信息 + 标注协议; 主模型 Read 帧图后按协议以像素
+    坐标返回主体框, 再作为 subject 参数调用 analyze_video_diff。
+
+    Args:
+        video_path: 视频文件绝对路径。
+        t: 抽帧时刻(秒), 如 "12.5"; 省略时取视频中间帧。主体会移动的素材可在
+            analyze_video_diff 报告提示的尖峰时刻重新抽帧标注。
+    """
+    if not os.path.isfile(video_path):
+        return f"错误: 文件不存在: {video_path}"
+    try:
+        info = _probe(video_path)
+        W, H = _resolution(info)
+    except ValueError as e:
+        return f"错误: {e}"
+    try:
+        t_sec = info["duration_sec"] * 0.5 if not t.strip() else float(t)
+    except ValueError:
+        return f"错误: t 需要 seconds 数值, 实得 {t.strip()!r}"
+    t_sec = max(0.0, min(t_sec, max(0.0, info["duration_sec"] - 0.05)))
+    stem = os.path.splitext(os.path.basename(video_path))[0]
+    out_dir = os.path.splitext(video_path)[0] + "_diff"
+    os.makedirs(out_dir, exist_ok=True)
+    fp = os.path.abspath(os.path.join(out_dir, f"{stem}_probe_{t_sec:.3f}s.jpg"))
+    try:
+        _extract_frame(video_path, t_sec, fp)
+    except ValueError as e:
+        return f"错误: {e}"
+    # 复用视觉证据压缩: 主模型读图的 token 开销有界(<=256KiB)
+    with Image.open(fp) as im:
+        _save_jpeg_small(im.convert("RGB"), fp)
+    return (f"== probe_frame: {os.path.basename(video_path)} @ {t_sec:.3f}s ==\n"
+            f"帧图: {fp}\n"
+            f"视频: {W}x{H}, 时长 {info['duration_sec']}s, "
+            f"{(info['fps'] or 0):.0f}fps, {info['size_mb']}MB\n\n"
+            f"标注协议: Read 上面的帧图, 定位画面中的主要人物/角色(动画主体), "
+            f"以像素坐标返回主体框 \"x,y,w,h\"(x,y=左上角, w,h=宽高, 基于 {W}x{H} 画面)。"
+            f"随后调用 analyze_video_diff(video_path={video_path!r}, subject=\"x,y,w,h\") "
+            f"在主体 ROI 内 diff。无明确主体或做全画面筛查时 subject 省略。")
 
 
 if __name__ == "__main__":

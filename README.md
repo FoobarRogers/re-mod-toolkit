@@ -11,7 +11,7 @@ Mod 开发 skill、视频帧 diff MCP 工具整合为单一可版本管理的分
 | agents | 3 | `glm-review`、`deepseek-review`（跨模型复审）、`data-researcher`（大数据过滤研究） |
 | commands | 4 | `deepseek-review`、`glm-review`（手动触发复审）、`promote-main`、`release`（版本晋升/发布授权） |
 | skills | 9 | RE Engine Mod 开发全链路：`reframework-lua-development`、`reframework-api-reference`、`mod-debugging`、`mod-package`、`mod-version-workflow`、`mod-visual-validation`、`reengine-asset-diagnosis`、`npc-to-player-routing`、`animation-bake-tuning` |
-| MCP | 1 | `glm-vision`：`analyze_video_diff` 像素级视频帧 diff，定位画面突变帧对 |
+| MCP | 1 | `glm-vision`：`probe_frame` + `analyze_video_diff` 双工具视频帧 diff（主模型标注主体，server 纯像素定位突变帧对，零模型依赖、零凭据） |
 
 ## 安装
 
@@ -39,19 +39,19 @@ Mod 开发 skill、视频帧 diff MCP 工具整合为单一可版本管理的分
 
 插件是缓存拷贝制：只改源码不递增版本号、不在 UI 里更新，改动不会生效。
 
-## MCP：无 key 运作
+## MCP：glm-vision（零模型依赖）
 
-`analyze_video_diff` 的 diff 扫描本体是纯像素计算，始终零 API 费用。
-`ZHIPU_API_KEY` 为纯可选项：未配置时 `focus=auto` 自动降级为全画面 diff、`mark_glm` 被忽略，
-并在输出头部注明；配置后仅用于主体定位与可选 grounding（各一次廉价请求）。
+两个工具组成"标注 → diff"工作流，server 是纯本地像素计算：不调用任何视觉模型、
+不发起网络请求、不需要 API key、不携带凭据。
 
-如需启用语义定位，在**各自机器**上设置用户级环境变量后完全重启 ZCode：
+1. `probe_frame(video_path, t)`：抽单帧，返回图片路径 + 视频元信息 + 标注协议；
+2. 主模型 Read 帧图，定位主要角色/主体，以像素坐标 `x,y,w,h` 给出主体框；
+3. `analyze_video_diff(video_path, subject="x,y,w,h")`：在主体外扩 50% 的 ROI 内
+   像素级 diff，定位画面突变帧对并产出标注对比图。省略 `subject` 时全画面扫描
+   （阴性筛查用）。
 
-```
-setx ZHIPU_API_KEY "你的智谱key"
-```
-
-插件清单永不携带 key；`ZHIPU_MODEL` 可选（默认 `glm-4.6v`）。
+工具描述已限定为"视频 diff 工具"——不做视频内容理解、问答、浏览，语义结论由
+主模型 Read 对比图给出；主体标注也由主模型完成，server 只做固定外扩与像素计算。
 
 ## Discipline 文件同步约定
 

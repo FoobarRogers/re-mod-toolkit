@@ -1,10 +1,10 @@
 {
   "name": "re-mod-toolkit",
-  "version": "0.1.0",
-  "description": "RE Engine mod development toolkit: model-routed SessionStart discipline injection, large-file read guard, context water-level reminder, cross-model review agents, data-researcher agent, version/promote/release commands, 9 RE Engine mod skills, and a zero-key video frame-diff MCP server.",
+  "version": "0.2.0",
+  "description": "RE Engine mod development toolkit: model-routed SessionStart discipline injection, large-file read guard, context water-level reminder, cross-model review agents, data-researcher agent, version/promote/release commands, 9 RE Engine mod skills, and a keyless two-tool video frame-diff MCP server (probe_frame + analyze_video_diff).",
   "description_i18n": {
-    "en": "RE Engine mod development toolkit: model-routed SessionStart discipline injection, large-file read guard, context water-level reminder, cross-model review agents, data-researcher agent, version/promote/release commands, 9 RE Engine mod skills, and a zero-key video frame-diff MCP server.",
-    "zh-CN": "RE Engine Mod 开发工具箱：按模型路由的 SessionStart Discipline 注入、大文件读取硬拦截、上下文水位提醒、跨模型复审 subagent、大数据研究 subagent、版本晋升/发布 command、9 个 RE Engine Mod 开发 skill，以及无 key 可用的视频帧 diff MCP server。"
+    "en": "RE Engine mod development toolkit: model-routed SessionStart discipline injection, large-file read guard, context water-level reminder, cross-model review agents, data-researcher agent, version/promote/release commands, 9 RE Engine mod skills, and a keyless two-tool video frame-diff MCP server (probe_frame + analyze_video_diff).",
+    "zh-CN": "RE Engine Mod 开发工具箱：按模型路由的 SessionStart Discipline 注入、大文件读取硬拦截、上下文水位提醒、跨模型复审 subagent、大数据研究 subagent、版本晋升/发布 command、9 个 RE Engine Mod 开发 skill，以及零模型依赖的双工具视频帧 diff MCP server（probe_frame + analyze_video_diff）。"
   },
   "author": {
     "name": "mirac"
