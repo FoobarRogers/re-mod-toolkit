@@ -3,9 +3,6 @@
 RE Engine Mod 开发工具箱，一个 ZCode 插件：把 Discipline 注入 hook、跨模型复审 subagent、
 Mod 开发 skill、视频帧 diff MCP 工具整合为单一可版本管理的分发单元。
 
-> 本仓库是**权威维护仓库**。作者机器上另有插件安装源
-> （`D:\ZCODE-PLUGIN\re-mod-toolkit`），内容跟随本仓库同步。
-
 ## 组件
 
 | 类型 | 数量 | 内容 |
@@ -27,14 +24,11 @@ Mod 开发 skill、视频帧 diff MCP 工具整合为单一可版本管理的分
 ## Agents 的模型绑定（首次使用前检查）
 
 三个 subagent 中，`data-researcher` 未绑定模型（跟随当前会话模型），开箱即用；
-`glm-review` 与 `deepseek-review` 的 frontmatter 各自绑定了作者环境的模型账户：
+`glm-review` 与 `deepseek-review` 默认绑定了作者环境的模型账户，新环境首次调用可能报
+"余额不足 / 无可用资源包"类错误。
 
-- `agents/glm-review.md` → `model: bigmodel-api/GLM-5.3-Flash`（智谱 bigmodel 账户）
-- `agents/deepseek-review.md` → `model: 804526c5-3629-49fa-aab1-34c614471382/deepseek-flash`（DeepSeek 供应商账户）
-
-调用时报"余额不足 / 无可用资源包"类错误即账户侧未就绪。按自己的可用渠道修改对应
-`.md` 的 `model` 字段（换成自己账户下的模型 ID），然后按"版本管理与更新流程"重新分发；
-直接改插件缓存里的同名文件可临时应急，但下次 Update 会被覆盖。
+处理：在 ZCode 的 Agent 设置里**点击下拉框选择需要的 agent（模型）**，把
+`glm-review` / `deepseek-review` 指向自己账户下可用的模型即可，无需修改插件文件。
 
 ## 版本管理与更新流程
 
@@ -65,9 +59,3 @@ setx ZHIPU_API_KEY "你的智谱key"
 14 节编号一致；修改通用条款时两份必须同步，模型特有条款只改对应文件。
 `deepseek-role.md` 是 DeepSeek Main Agent 专属角色文件，由 `profiles/deepseek.json`
 的 `prepend` 注入，GLM 侧不得读取或套用。
-
-## 与 D:\ZCODE-PLUGIN 归档的关系
-
-作者机器上 `D:\ZCODE-PLUGIN\skill|hook|agent|command|mcp` 旧散装目录在插件验证通过并
-退役后转为只读归档，不再同步；`Template\`、`llvm-mingw\`、`zcode_export\`、`test\`
-等非运行时内容与本插件无关，仍在原处维护。
