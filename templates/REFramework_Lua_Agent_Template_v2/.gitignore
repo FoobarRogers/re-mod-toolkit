@@ -1,0 +1,8 @@
+tmp/
+*.log
+*.bak
+.DS_Store
+Thumbs.db
+
+# 如运行时配置不希望入库，可按项目需要启用：
+# reframework/data/*/config.json

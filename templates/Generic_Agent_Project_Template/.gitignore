@@ -1,0 +1,4 @@
+tmp/
+evidence/raw/
+*.log
+*.tmp

@@ -1,0 +1,9 @@
+tmp/
+*.log
+*.bak
+.DS_Store
+Thumbs.db
+
+# 根据项目需要补：
+# release/**/*.zip
+# dist/

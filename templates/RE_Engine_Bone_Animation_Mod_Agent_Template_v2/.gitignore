@@ -1,0 +1,12 @@
+tmp/
+tmp_*/
+*.log
+*.bak
+.DS_Store
+Thumbs.db
+
+# 运行时输出（探针 JSON 等）按项目落点启用：
+# pose_capture/
+
+# 产物 zip 通常不入库（交分发渠道）；release/ 其余内容与清单按项目声明入库：
+# release/**/*.zip

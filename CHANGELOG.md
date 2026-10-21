@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.3.0 (2026-10-22)
+
+项目模板随插件分发 + 建项 command。
+
+- 新增 `templates/`：4 份 Agent 项目模板（Generic / REFramework Lua v2 / RE Engine 外观
+  v2 / RE Engine 骨骼动画 v2），自旧散装模板目录迁入并完成对外交付化修订。
+- 模板修订：Discipline 权威源改指向插件 hook 与 GitHub 仓库（移除已退役的本机绝对路径）；
+  Review Agent / Command 补 `re-mod-toolkit:` 前缀；AGENTS.md §4 增加"组件由 re-mod-toolkit
+  插件提供"前置声明；本地 Windows 工具链改为仅 DLL / 原生编译时适用，本机缺失时建议用户
+  安装 MSVC（指引见发布帖），fallback 由 Agent 自动安装 LLVM-MinGW 并设置 `LLVM_MINGW`；
+  4 份 README 重写（移除 Common Core zip 旧引用，补依赖声明与建项方式）。
+- 新增 command `new-mod-project`：引导选择项目类型（lua / appearance / animation / generic）、
+  从 `templates/` 复制建项并填充项目身份占位符。
+- README：组件表收录 templates，新增"从模板建项目"与"单模型使用边界"章节。
+
 ## 0.2.0 (2026-10-21)
 
 MCP 架构反转：主体定位从 server 内调 GLM-4.6v 改为主模型看帧图标注。

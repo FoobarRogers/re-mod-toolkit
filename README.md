@@ -9,9 +9,10 @@ Mod 开发 skill、视频帧 diff MCP 工具整合为单一可版本管理的分
 | --- | --- | --- |
 | hooks | 3 | `discipline-router`（SessionStart 按模型路由 Discipline 注入）、`zcode-large-file-guard`（PreToolUse 大文件读取硬拦截）、`context-reminder`（PostToolUse 上下文水位提醒） |
 | agents | 3 | `glm-review`、`deepseek-review`（跨模型复审）、`data-researcher`（大数据过滤研究） |
-| commands | 4 | `deepseek-review`、`glm-review`（手动触发复审）、`promote-main`、`release`（版本晋升/发布授权） |
+| commands | 5 | `deepseek-review`、`glm-review`（手动触发复审）、`promote-main`、`release`（版本晋升/发布授权）、`new-mod-project`（从模板建项） |
 | skills | 9 | RE Engine Mod 开发全链路：`reframework-lua-development`、`reframework-api-reference`、`mod-debugging`、`mod-package`、`mod-version-workflow`、`mod-visual-validation`、`reengine-asset-diagnosis`、`npc-to-player-routing`、`animation-bake-tuning` |
 | MCP | 1 | `glm-vision`：`probe_frame` + `analyze_video_diff` 双工具视频帧 diff（主模型标注主体，server 纯像素定位突变帧对，零模型依赖、零凭据） |
+| templates | 4 | Agent 项目模板（随项目复制使用）：`Generic_Agent_Project_Template`（通用）、`REFramework_Lua_Agent_Template_v2`、`RE_Engine_Appearance_Mod_Agent_Template_v2`、`RE_Engine_Bone_Animation_Mod_Agent_Template_v2` |
 
 ## 安装
 
@@ -20,6 +21,23 @@ Mod 开发 skill、视频帧 diff MCP 工具整合为单一可版本管理的分
 1. **clone 后安装**：`git clone https://github.com/FoobarRogers/re-mod-toolkit.git` →
    ZCode → Plugin Marketplace → Add marketplace → 粘贴 clone 出的目录路径 → Install → Enable。
 2. **本地路径安装**：不 clone，直接把仓库 ZIP 解压目录（或本地已有副本）粘给 Add marketplace。
+
+## 从模板建项目
+
+`templates/` 提供 4 份开箱即用的 Agent 项目模板（通用 / REFramework Lua / RE Engine 外观
+/ RE Engine 骨骼动画），模板内的 Skills、复审 Agent 与 Discipline hook 都指向本插件的
+组件，需先安装并启用插件。两种用法：
+
+- **手动**：把所选模板目录复制为项目根，按其 `AGENTS.md` §1 填项目身份；
+- **引导**：在 ZCode 会话里执行 `/new-mod-project`，Agent 会询问项目类型与目标目录、
+  复制模板并填充项目身份。
+
+## 单模型使用边界
+
+本套件的双模型工作流（DeepSeek ↔ GLM 交叉复审）默认用户同时持有两家模型：Discipline
+hook 只在 stdin 模型名含 `deepseek` / `glm` 时注入，其它模型（Claude、GPT 等）静默
+不注入、模板复审路由不适用——单模型用户仍可正常使用全部 skills、commands、MCP 与
+`data-researcher`，但模板中的复审章节对你是空路由，可按需删改。
 
 ## Agents 的模型绑定（首次使用前检查）
 
