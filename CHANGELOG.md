@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.2 (2026-10-24)
+
+`reframework-lua-development` 对齐主文件与参考页的逐帧检查表述。
+
+- `SKILL.md`：hook 指导句改为"无已验证转移 hook 时，每帧有界身份检查可接受；
+  广域逐帧轮询不可；不得从 open/close 方法名推断事件语义"，消除与
+  `runtime-and-hooks.md` 的双写漂移（0.3.1 新增两条仅进参考页），并避免对
+  实测为有界形态的既有每帧模式（DamageDisplay / autoBuff）造成误改写压力。
+- 评审确认 `player-lifecycle-and-application.md` §8 基线锚点维持原样：基线
+  权威已由 `mod-version-workflow`（从项目 AGENTS.md / handoff 读取
+  last user-validated baseline）与 mod 文件夹命名承载，不在技能内重复维护。
+
 ## 0.3.1 (2026-10-24)
 
 `reframework-lua-development` 增补 Player 生命周期、缓存与应用参考页。
