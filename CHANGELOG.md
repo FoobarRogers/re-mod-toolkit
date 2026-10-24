@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.3.1 (2026-10-24)
+
+`reframework-lua-development` 增补 Player 生命周期、缓存与应用参考页。
+
+- 新增 `references/player-lifecycle-and-application.md`：玩家身份 / 意图 / 就绪 /
+  写入时机分层、缓存失效边界、应用触发与记账原则、按特性的写入策略
+  （AVM 材质可见性 / 变身脚本 / LuaBone 骨骼控制器）、区分性证据采集与验证范围；
+  证据锚点取自 MHR AVM / BladeSwitch 实测（2026-10-24），限定为该项目证据而非
+  通用时序保证。
+- `references/runtime-and-hooks.md`：Managed object lifecycle 增补"有效受管引用
+  不等于当前主角"的身份确认原则；Hook selection 增补有界逐帧身份检查的适用边界，
+  以及不得从 open/close 方法名推断事件语义。
+- `SKILL.md`：description 中英双语增补玩家扫描、外观/变身控制、LuaBone 与自定义
+  骨骼控制器触发词；新增 Player scanning and application 段并链接新参考页。
+
 ## 0.3.0 (2026-10-22)
 
 项目模板随插件分发 + 建项 command。

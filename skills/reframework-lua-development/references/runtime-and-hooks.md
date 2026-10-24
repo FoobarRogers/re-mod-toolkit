@@ -7,6 +7,7 @@ globals and stdlib calls exist, and how a load failure reads — is covered in `
 
 - Treat singletons, fields, components, and method returns as nullable unless runtime evidence establishes otherwise.
 - A managed object may become invalid after loading a save, changing map, entering or leaving a quest, rebuilding MasterPlayer, or resetting scripts.
+- A valid managed reference is not proof that it is the current actor. Check authoritative identity separately from object liveness; account for sampled absence and possible address reuse.
 - Cache stable identifiers and cheap lookup state longer than managed objects. Document invalidation conditions for any long-lived managed object cache.
 - When a reference becomes invalid, clear dependent state before reacquiring it. Do not keep calling an invalid object in a protected loop.
 
@@ -35,7 +36,7 @@ Confirm the declaring type, exact overload, parameter order, return behavior, an
 
 Use a pre-hook only for work that must happen before the original call. Use a post-hook when the original result or completed state is required. Preserve the original method's semantics unless replacement is the requested feature.
 
-Prefer a method that represents the actual state transition. A broad per-frame poll is a fallback when no reliable event exists, not the default.
+Prefer a method that represents the actual state transition. A broad per-frame poll is a fallback when no reliable event exists, not the default. If no verified transition hook exists, a bounded current-actor identity check each frame can be appropriate; it is not permission to traverse all players or components each frame. Never infer event semantics from an open/close method name alone.
 
 ## Conditional hooks
 

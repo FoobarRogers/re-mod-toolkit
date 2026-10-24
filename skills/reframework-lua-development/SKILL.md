@@ -1,6 +1,6 @@
 ---
 name: reframework-lua-development
-description: "开发或审查 REFramework Lua Mod，处理运行生命周期、Hook、原生流程介入（原生弹窗、列表适配、任务/网络状态机）、配置、UI 分离和脚本重载；也用于修复脚本自身报出的错误——ScriptRunner 弹窗、红字、语法与加载失败、沙箱能力不符、加载时机契约。新增、修改或修复 Lua 功能时使用；不用于原生 DLL 或纯资源修改，也不用于必须还原运行过程才能定位的问题（hook 未命中、重载顺序、重复报错、时序与性能）。Develop or review REFramework Lua mods with correct lifecycle, hooks, native-flow integration, configuration, UI separation, and reload behavior, and fix errors the script itself raises. Not for native DLL or asset-only work, nor for failures that require runtime evidence."
+description: "开发或审查 REFramework Lua Mod，处理运行生命周期、Hook、原生流程介入（原生弹窗、列表适配、任务/网络状态机）、配置、UI 分离和脚本重载，包括玩家扫描、外观/变身控制、LuaBone 与自定义骨骼控制器；也用于修复脚本自身报出的错误——ScriptRunner 弹窗、红字、语法与加载失败、沙箱能力不符、加载时机契约。新增、修改或修复 Lua 功能时使用；不用于原生 DLL 或纯资源修改，也不用于必须还原运行过程才能定位的问题（hook 未命中、重载顺序、重复报错、时序与性能）。Develop or review REFramework Lua mods with correct lifecycle, hooks, native-flow integration, configuration, UI separation, and reload behavior, including player scanning, appearance or transformation control, LuaBone, and custom bone controllers; also fix errors the script itself raises. Not for native DLL or asset-only work, nor for failures that require runtime evidence."
 ---
 
 # REFramework Lua Development
@@ -33,6 +33,10 @@ Read a load failure by its shape: `attempt to index/call a nil value (global 'X'
 Read [runtime-and-hooks.md](references/runtime-and-hooks.md) when touching managed objects, hooks, callbacks, caching, or performance. Read [native-integration.md](references/native-integration.md) when the feature calls into, reuses, or takes over native flows — dialogs, lists, quest or network state machines — or when deciding how deep to integrate and how to probe the native contract first. Read [structure-and-delivery.md](references/structure-and-delivery.md) when adding UI, configuration, localization, persistent state, or preparing a test build. Read [sandbox-and-errors.md](references/sandbox-and-errors.md) when the script depends on a global or stdlib call, or when a popup or red error text appears.
 
 When writing a script from scratch, or introducing an API call the project has not used yet, load the `reframework-api-reference` skill first and read only the pages its index routes to — do not write API signatures from memory. Edits that rework existing logic, configuration, or strings without new API calls do not need it.
+
+## Player scanning and application
+
+For scripts that discover and mutate players, read [player-lifecycle-and-application.md](references/player-lifecycle-and-application.md) before changing scan frequency, instance caches, or application timing. Separate live actor identity, user intent, instance readiness, and writer timing. Preserve proven CG, manual selection, and multiplayer paths while testing a targeted change.
 
 ## Implement the smallest coherent change
 
