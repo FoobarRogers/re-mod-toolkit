@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.3.3 (2026-10-24)
+
+`reframework-lua-development` 统一逐帧轮询措辞（0.3.2 评审闭环）。
+
+- `SKILL.md`：hook 摘要句改为"方法名≠语义；无已验证转移 hook 时按功能所需
+  节奏选择有界轮询；区分轻量身份检查与全量发现扫描"，移除"有界逐帧 /
+  广域轮询"的二元表述，避免把逐帧当成缺省节奏或误伤经 `on_frame` 推进的
+  分预算发现工作。
+- `references/runtime-and-hooks.md`：Hook selection 段同步展开——每帧轻量
+  身份检查按需用于及时重建处理；禁止的是每帧重复全量遍历；更大范围发现须
+  显式预算（增量推进或重建窗口）并保留慢速恢复路径；保留"方法名≠事件语义"句。
+- 评审裁定：`player-lifecycle-and-application.md` §8 基线锚点维持原样——
+  版本控制权在 `mod-version-workflow` 与项目文档，历史锚点仅作追溯。
+  hook 规则增量今后须 `SKILL.md` 与 `runtime-and-hooks.md` 两处同步。
+
 ## 0.3.2 (2026-10-24)
 
 `reframework-lua-development` 对齐主文件与参考页的逐帧检查表述。

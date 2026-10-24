@@ -36,7 +36,7 @@ Confirm the declaring type, exact overload, parameter order, return behavior, an
 
 Use a pre-hook only for work that must happen before the original call. Use a post-hook when the original result or completed state is required. Preserve the original method's semantics unless replacement is the requested feature.
 
-Prefer a method that represents the actual state transition. A broad per-frame poll is a fallback when no reliable event exists, not the default. If no verified transition hook exists, a bounded current-actor identity check each frame can be appropriate; it is not permission to traverse all players or components each frame. Never infer event semantics from an open/close method name alone.
+Prefer a method that represents the actual state transition. When no suitable verified transition hook exists, use a bounded current-actor identity check at the cadence required by the feature; per-frame checks can be appropriate for timely reconstruction handling. Do not repeat full player, component, or scene traversal every frame merely because a hook is unavailable. If broader discovery is necessary, budget it explicitly through incremental work or a bounded reconstruction window, and retain a slower recovery path. Never infer event semantics from an open/close method name alone.
 
 ## Conditional hooks
 
