@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.3.4 (2026-10-26)
+
+`context-reminder` hook 水位提醒按主 agent 模型分档（修复 GLM 对软提醒过度紧张）。
+
+- 背景：原 hook 模型无关，对 GLM 也在 25 万 tokens 发"接近 30 万软阈值"的
+  提前量催促；30 万/50 万阈值系 DeepSeek discipline 特化条款（GLM 版
+  2026-10-11 裁剪有意不含），GLM 收到引用不存在条款的"接近阈值"式催促后
+  过度反应（29 万即自称"软提醒严重超限，建议更换任务"，实际硬档远未触发）。
+- `context_reminder.py`：新增 `WATER_PROFILES` 按主 agent 模型分档——
+  DeepSeek 维持 25 万软提醒（提前量，每 +5 万重复）+ 45 万硬警告（行为与
+  文案不变）；GLM 及其它模型无提前量，仅 30 万 / 50 万到点提醒（每
+  +10 万 / +2 万重复），文案为到点动作指令（落盘、提议 compact / 必须
+  收束），不再引用 DeepSeek 特化段名。
+- 模型取档来源：`model_usage` 主 agent（`agent='zcode-agent'`）最近一条的
+  `model_id`，子 agent 模型不干扰；取不到主 agent 行时 fail-open 不发提醒。
+- `GLM-discipline.md`：头部维护说明补 2026-10-26 补记——数值坎仍不写入
+  GLM 正文，hook 侧以 30 万/50 万到点提醒承载。
+- 重复读（R）与批量 Bash（B）检查与模型无关，行为不变；离线单测 10/10
+  覆盖两档触发、去重间隔、子 agent 隔离、fail-open 与 R 保留。
+
 ## 0.3.3 (2026-10-24)
 
 `reframework-lua-development` 统一逐帧轮询措辞（0.3.2 评审闭环）。
