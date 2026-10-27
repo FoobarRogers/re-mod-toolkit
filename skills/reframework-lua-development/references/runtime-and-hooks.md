@@ -50,6 +50,20 @@ When a hook should affect one instance or one UI flow only, gate it instead of m
 - Overwriting a return value changes state other systems read. Reserve it for a narrowly matched, proven problem, and verify every path that resets the underlying state — disconnect, scene change, cancellation.
 - `sdk.hook_vtable` targets one object's vtable entry; confirm its actual scope on the target build before assuming other instances are unaffected.
 
+## Per-frame cost model
+
+A frame callback or hot hook runs at a cadence set by the game or framework — that part is
+not yours to optimize. What you control is how many Lua→native bridge calls (`get_field`,
+`call`, `get_address`, `to_managed_object`…) each pass performs. Budget in that unit while
+designing: a "lightweight" per-frame check that makes five bridge calls costs five times a
+one-call check, and a steady poll touching 14 objects × 3 fields ≈ 42 bridge calls every
+frame is a first-class frame-budget consumer even when each call is individually cheap —
+it can rank among the most expensive scripts in a loaded set without containing a single
+"slow" call.
+
+Estimate the bridge-call count of a designed pass before writing it, and verify with a
+profiler afterwards. Do not spend the budget discovering what has not changed.
+
 ## Hot paths
 
 Do not perform these in a high-frequency hook or frame callback:

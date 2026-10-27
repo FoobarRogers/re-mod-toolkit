@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.3.5 (2026-10-28)
+
+`reframework-lua-development` 增补"从零开发"与"接手他人 mod"两条路径及每帧
+成本心智（依据 `lua审查开发` 项目全集合 Lua 审查与两个 fix 任务的缺口分析，
+已经独立复审 SUPPORTED 并采纳 3 处最小修复）。
+
+- `SKILL.md`：description 补"从零新建脚本 / 接手他人既有 mod 二次开发"触发
+  词，排除子句限定为"必须还原运行过程才能定位的故障诊断"，澄清低开销每帧
+  逻辑仍属本 skill；开头段补非平凡子系统先找项目内已验证蓝本；Verify 清单
+  共存条扩展到 hook 层（hooking the same methods），新增 per-frame path 前后
+  profiler 对照条（场景与绘制模式匹配、说明量化下限）；hook 摘要段补桥调用
+  预算一句（与 runtime-and-hooks.md 两处同步，0.3.3 裁定）。
+- 新增 `references/onboarding-existing-mod.md`：接手四问（每问需源码行背
+  书）、症状补丁识别（指纹检查 / 强制重扫 / 魔数刷新窗口三类特征，剥离前先
+  写正确性论证）、共享面共存按实测量级裁决而非模式匹配、优化量级门槛（收
+  益低于测量噪声地板不动工，确定收益与未验证候选分列）、部署验证收尾。
+- `references/runtime-and-hooks.md`：Hot paths 前新增 "Per-frame cost model"
+  段——预算单位为每趟 Lua→native 桥调用次数；调用频率由游戏/框架决定、不
+  可优化，单趟成本由 mod 代码决定；设计期估算、profiler 事后验证。
+- `references/structure-and-delivery.md`：新增最小骨架代码块（log 加载标记 +
+  json 配置 + on_frame + on_draw_ui 区块顺序；`or` 仅覆盖文件缺失，旧配置需
+  按字段合并默认值）、UI 技术路线选择段（imgui 面板 vs d2d HUD；d2d 回调在
+  profiler 包装之外，前后性能对照不得混绘制路径）、overlay 部署加载标记做法
+  （版本标记进框架日志，先查日志再归因）。
+- `references/sandbox-and-errors.md`：差异清单后补 REFramework 核心全局面
+  清单（sdk / re / imgui / json / log / fs / d2d）及签名核对路由。
+
 ## 0.3.4 (2026-10-26)
 
 `context-reminder` hook 水位提醒按主 agent 模型分档（修复 GLM 对软提醒过度紧张）。
