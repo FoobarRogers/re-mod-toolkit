@@ -1,6 +1,7 @@
 # Onboarding an existing mod
 
-Apply these rules when the task is to modify, fix, or optimize a script you did not write —
+Apply these rules when the task is to modify, fix, or optimize a script whose runtime
+structure and design assumptions have not yet been established in the current task —
 especially one that has already passed through several rounds of fixes (human or AI) before
 you reached it.
 
@@ -13,12 +14,15 @@ Answer four questions from the source before restructuring anything:
 3. When is configuration loaded and saved?
 4. At which lifecycle points can the game objects it touches be rebuilt?
 
-Each answer needs a line in the source, not an impression. Do not restructure before these
-four have source-backed answers.
+Support each answer with the relevant source locations, and where source alone cannot
+settle it, with runtime or API evidence; record unresolved points explicitly. Do not
+restructure before these four have evidence-backed answers.
 
 ## Recognize symptom patches
 
-Compensation logic is the signature of patches stacked on an unrepaired root cause:
+Repeated compensation logic may indicate patches stacked on an unresolved root cause, but
+these mechanisms can also be required by the runtime contract; treat them as investigation
+cues, not as proof of a defect:
 
 - fingerprints or signature checks whose only job is to notice "something changed";
 - forced rescan flags and magic-number refresh windows (`*_FAST_REBUILD_FRAMES = 60`);
@@ -26,11 +30,10 @@ Compensation logic is the signature of patches stacked on an unrepaired root cau
   script's next re-apply.
 
 Each such patch typically buys a shorter detection window. Find the root cause it
-compensates for first: one wrong condition upstream can make the whole detection network
-redundant — restoring a single lost `not` can beat any amount of fingerprinting. Before
-removing patches, write down the correctness argument for why they become redundant (what
-re-asserts the state, and how long a game-side reset can survive), and put the measured
-cost of both designs side by side.
+compensates for first: an incorrect upstream condition can make the whole detection network
+redundant. Before removing patches, establish that relationship, write down the correctness
+argument for why they become redundant (what re-asserts the state, and how long a game-side
+reset can survive), and put the measured cost of both designs side by side.
 
 ## Check coexistence on shared surfaces
 
@@ -42,7 +45,8 @@ same feature, redundancy is a user choice to surface, not a bug to silently "fix
 ## Gate optimization on magnitude
 
 Profile before proposing to optimize. State current cost and expected gain in per-frame
-terms, and do not open a rework whose saving is below the measurement's noise floor.
+terms, and do not justify a performance-only rework by gains the measurement cannot
+reliably distinguish.
 Split a proposal into what is certain (removing measured calls) and what is a candidate
 (an assumed-cheaper alternative path); a candidate stays unverified until measured in
 game.

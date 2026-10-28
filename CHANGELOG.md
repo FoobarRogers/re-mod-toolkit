@@ -1,5 +1,38 @@
 # Changelog
 
+## 0.3.6 (2026-10-28)
+
+版本管理新增 **prerelease 基线固化形态**；两份 discipline 增补消耗-效果边界
+条款（反 flash 级模型节能保守倾向）；依据 GPT 措辞审查（裁决表见
+`docs/review-packet-version-workflow-2026-10-28.md`）修正绝对化与歧义表述。
+
+- `hooks/discipline-router/`：deepseek-discipline 与 GLM-discipline 同步增补
+  ——§8 最小以完全满足当前目的为前提（不为省消耗裁剪用户要求，认为不妥实
+  现前向用户提出）、§9 最小实验缩小影响面不缩验证覆盖、§10 工具经济服从效
+  果（预期消耗差距不悬殊时按预期效果选择方案，不为省 token 选已知效果更差
+  的一方）。
+- `skills/mod-version-workflow`：新增 prerelease（基线固化）形态——开发
+  test 阶段基本完成后由用户授权冻结进 release 文件夹（命名如
+  `1.11prerelease1`）并登记为工作基线，后续 fix/test 在该基线上循环，列举
+  问题全部验证后由用户授权发布正式 release（`1.11`）；release 后新修复做
+  fix，改动较大发下一版本；main 形态保留；description / Identify / 转移表
+  / 固化确认项同步。
+- `skills/mod-package`：包类型新增 `prerelease`（complete clean-installable
+  文件集固化为工作基线，标签保留 prerelease 标记，不含发布授权）；
+  `references/package-types.md` 补 prerelease 与 add-on 定义行及
+  Prerelease packages 节。
+- add-on 定位补强：明确 A/B 功能替换包语义（release 是 A 功能版，add-on
+  仅含替换为 B 功能的文件，非 Lua mod 常见）；样例 `bake1.10-escape1` →
+  `bake1.10-escape`（对齐 No ordinal 规则）；安装说明改为"覆盖同一批安装
+  路径、add-on 替换文件优先，按实际安装方式描述回退"。
+- GPT 措辞审查采纳修复：prerelease 区分"安装内容完整"与"发布验收完成"、
+  固化确认项改列举式、发布验证对象明确为"列举问题的修复通过验证"；lua-dev
+  侧 8 处绝对化/歧义表述改条件化（补偿逻辑改调查线索、callback cadence 与
+  桥调用两处同步区分、42 示例加统计边界、profiler 覆盖改条件检查、起始骨架
+  改非必选、onboarding 触发改任务级理解、description 主责划界）。
+- 4 份项目模板 `version-workflow.md`：新增 §4"Prerelease 固化与基线登记"
+  （原"验收与发布"顺延为 §5），状态节补 prerelease 循环说明。
+
 ## 0.3.5 (2026-10-28)
 
 `reframework-lua-development` 增补"从零开发"与"接手他人 mod"两条路径及每帧

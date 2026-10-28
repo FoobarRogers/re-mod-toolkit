@@ -10,7 +10,7 @@
 
 Put autorun entrypoints under the project's declared `reframework/autorun/` layout. Put configuration, caches, and logs under the project's declared `reframework/data/<project>/` layout unless compatibility requires an existing path.
 
-When starting a script from scratch, keep the first deliverable to one file that already carries the full skeleton — load marker, config with defaults, one frame callback, one UI callback — then grow it in regions: config → state → runtime access → feature logic → hooks → UI → lifecycle.
+When starting a small script from scratch, prefer a single-file first deliverable that carries only the configuration, callbacks, and UI the requested feature requires; the skeleton below illustrates the components, and not all of them are mandatory. Grow the file in regions: config → state → runtime access → feature logic → hooks → UI → lifecycle.
 
 ```lua
 log.info("[MyMod] loaded")  -- load marker; version-tag it when deployed as an overlay
@@ -32,7 +32,7 @@ re.on_draw_ui(function()
 end)
 ```
 
-Choose the UI route per feature: `imgui` widgets suit settings panels and state inspection, `d2d.register` suits HUD overlays rendered without a window. The choice is also a measurement boundary — d2d callbacks sit outside profiler instrumentation, so before/after performance comparisons must not mix drawing paths.
+Choose the UI route per feature: `imgui` widgets suit settings panels and state inspection, `d2d.register` suits HUD overlays rendered without a window. The choice is also a measurement boundary — check whether the profiler used for a comparison includes the selected drawing callbacks; keep drawing paths consistent between measurements, and report any work excluded from instrumentation.
 
 Keep local development aids — stubs, fake-object harnesses, self-test scripts — outside the deployed tree, and name them so their status is visible without opening them. Give each one a guard that exits before touching any global if the game loads it by mistake: a harness that replaces `sdk`, `re`, or `imgui` breaks every mod loaded in the same pass, and it does that *before* raising the error that produces the popup — so the popup is the least of the damage. A directory that mixes deployable scripts with local tools silently destroys the invariant "everything here can be copied into autorun"; once that invariant is gone, nothing warns anyone.
 
@@ -40,7 +40,7 @@ Naming can also make the mistake harmless rather than merely visible: autorun lo
 
 A fix in the repository does not change what the game loads. After changing any deployed script, verify the deployment site itself and reconcile it — which files are present, whether each still matches the repository, which ones should not be there at all. A stale copy left in autorun reproduces the old symptom exactly and makes the repaired code look broken.
 
-When the deployment is an overlay — a mod manager copying folders over one another — add a one-line load marker with a version tag to the script head (`log.info("[MyMod] fix1 loaded")`). Its presence in the framework log is the evidence that the new file actually won the copy; check it before attributing any behavior to your change.
+When the deployment is an overlay — a mod manager copying folders over one another — add a one-line load marker with a version tag to the script head (`log.info("[MyMod] fix1 loaded")`). Its presence in the framework log confirms that the file carrying that marker won the copy; it does not rule out duplicate or stale scripts elsewhere. Check it before attributing any behavior to your change.
 
 ## Configuration
 

@@ -1,6 +1,6 @@
 interface:
   display_name: Mod 版本工作流
-  short_description: 管理 test、fix、main、release 与 add-on（附加包）的版本状态和权限边界
+  short_description: 管理 test、fix、main、prerelease、release 与 add-on（附加包）的版本状态和权限边界
   default_prompt: Use $mod-version-workflow to plan the next safe version step for
     this mod.
   icon_small: assets/icon.svg

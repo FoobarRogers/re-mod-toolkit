@@ -53,12 +53,16 @@ When a hook should affect one instance or one UI flow only, gate it instead of m
 ## Per-frame cost model
 
 A frame callback or hot hook runs at a cadence set by the game or framework — that part is
-not yours to optimize. What you control is how many Lua→native bridge calls (`get_field`,
-`call`, `get_address`, `to_managed_object`…) each pass performs. Budget in that unit while
-designing: a "lightweight" per-frame check that makes five bridge calls costs five times a
-one-call check, and a steady poll touching 14 objects × 3 fields ≈ 42 bridge calls every
-frame is a first-class frame-budget consumer even when each call is individually cheap —
-it can rank among the most expensive scripts in a loaded set without containing a single
+not yours to optimize. Distinguish the invocation frequency from the frequency of
+substantive work: where the feature permits, skip unchanged work or run expensive checks
+less often, without changing required response timing. What you control is how many
+Lua→native bridge calls (`get_field`, `call`, `get_address`, `to_managed_object`…) each
+pass performs. Bridge-call count is a useful estimate of workload, not a direct measure of
+execution time — compare call types and frequencies, then verify total cost with profiling.
+As an arithmetic example, reading three fields from each of fourteen objects requires about
+42 field reads per pass, excluding lookup and conversion work; a steady poll of that shape
+is a first-class frame-budget consumer even when each call is individually cheap, and it
+can rank among the most expensive scripts in a loaded set without containing a single
 "slow" call.
 
 Estimate the bridge-call count of a designed pass before writing it, and verify with a

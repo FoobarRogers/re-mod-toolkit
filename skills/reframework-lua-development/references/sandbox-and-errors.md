@@ -23,8 +23,8 @@ target build before relying on it:
   can be skipped, turning a missing widget into an assertion.
 
 The core script-facing globals are all REFramework-provided: `sdk`, `re`, `imgui`, `json`,
-`log`, `fs`, and `d2d` where the build offers it. None of them exist in a plain
-interpreter, so "is `log` available?" is an environment question, not a Lua one — confirm
+`log`, `fs`, and `d2d` where the build offers it. None of them are provided by standard Lua
+itself, so "is `log` available?" is an environment question, not a Lua one — confirm
 signatures against `reframework-api-reference` instead of recalling them.
 
 Every item above is legal standard Lua. That is precisely why a local interpreter is not evidence:
