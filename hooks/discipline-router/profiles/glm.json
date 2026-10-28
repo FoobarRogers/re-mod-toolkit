@@ -2,7 +2,7 @@
   "profile_id": "glm",
   "enabled": true,
   "prompt": "../GLM-discipline.md",
-  "heading": "## GLM Discipline",
+  "heading": "--------------",
   "max_prompt_bytes": 65536,
   "max_context_chars": 20000,
   "max_output_bytes": 30000

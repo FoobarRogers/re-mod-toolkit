@@ -3,7 +3,7 @@
   "enabled": true,
   "prepend": "../deepseek-role.md",
   "prompt": "../deepseek-discipline.md",
-  "heading": "## DeepSeek Implementation Discipline",
+  "heading": "--------------",
   "max_prompt_bytes": 65536,
   "max_context_chars": 20000,
   "max_output_bytes": 30000

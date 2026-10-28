@@ -1,5 +1,40 @@
 # Changelog
 
+## 0.3.7 (2026-10-28)
+
+discipline 注入的 profile `heading` 由标题文案改为 markdown 分隔线。依据
+DeepSeek 实测反馈：原标题 `## DeepSeek Implementation Discipline` 夹在 role
+与 discipline 两个自带 H1 之间，层级倒挂（H2 弱于其所分隔的 H1）且与
+discipline 自带标题语义重复，引起载荷归属歧义。
+
+- `hooks/discipline-router/profiles/deepseek.json` / `glm.json`：`heading`
+  统一改为 `--------------`（thematic break）。注入形态变为 role 全文（仅
+  DeepSeek）→ 分隔线 → discipline 文件原样；载荷归属完全由 discipline 自带
+  的 H1 标示，分隔线不声明归属。脚本与 schema 未动（`heading` 仍为
+  required 字段，仅改值）。
+- 行为级验证（本地三 case 全过）：DeepSeek 正常（provider 前缀剥离匹配，
+  role→分隔线→discipline）、GLM 正常（分隔线→discipline）、DeepSeek
+  prepend 不可读降级（分隔线→discipline）；各分隔线前均为空行，无 setext
+  标题陷阱；注入体积 7.5k/4.0k/7.0k 字符，均在 max_context_chars=20000 预算内。
+
+同批并入（同版发布，未单独 bump）：
+
+- `hooks/discipline-router/deepseek-discipline.md` / `GLM-discipline.md`：
+  §10 增补大型数据单次只读检索的子智能体分工段——文本/代码定位优先评估
+  内置 Explore（fork 型轻量无写入、不注入 AGENTS.md，任务提示须自带中文
+  要求与本次约束），结构化数据/自定义格式解析/需脚本侧处理或落盘产物的用
+  data-researcher（有 Write）；不得要求只读 Explore 执行写入或大文件完整
+  解析。依据 ZCode 子智能体 wiki 与 2026-10-28 spawn 实测装配矩阵。
+- `hooks/discipline-router/deepseek-role.md`：全文重写（约 1.1KB → 3.9KB）。
+  新增 §1 任务责任（RE 专业身份弱化为任务条件式——router hook 对所有装有
+  本插件的工作区全局注入，非仅 RE 工作区）、§3 动态子智能体协作（适时委派
+  /选型/提示词组织/独立拆分/成本控制/主 Agent 责任；委派门槛不以"复杂任务"
+  为限，general-purpose 限"独立上下文+可独立验收"，Profile 防惯性默认调用；
+  末段用职责式表述，不依赖子智能体派发能力等易变环境事实）、§4 与工程纪律
+  的关系（防扩散条款）；原 5 项不得覆盖清单保留。GLM 侧不设对应 Role
+  （AGENTS.md §4 与 GLM-discipline 头部既有约定，仅约束 DeepSeek Main
+  Agent）。路由细节经 ChatGPT Review 三处修正后定稿。
+
 ## 0.3.6 (2026-10-28)
 
 版本管理新增 **prerelease 基线固化形态**；两份 discipline 增补消耗-效果边界
