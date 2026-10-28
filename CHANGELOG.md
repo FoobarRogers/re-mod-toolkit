@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.3.8 (2026-10-29)
+
+`deepseek-role.md` 重写为 subagent 使用指南（1,694 → 1,018 字符，约 -40%），
+删除与 AGENTS / Discipline 的语义重复，role 只保留“选模块、发任务、整合”。
+
+- 开头改为身份 + 专家模块激活，删除“本文件仅供…”“本 Role 只补充…”等自指句；
+  注入后不再依赖模型区分文档边界。
+- §1 用 subagent：fork 型优先。写明 Explore 不继承项目指令/角色/纪律，任务包须
+  写清探索什么、要什么结论、边界、证据、返回；general-purpose 继承项目 AGENTS
+  但不继承主会话任务状态，任务包先写角色定位；Profile（data-researcher）按
+  discipline §10 选型；状态型工作留主 agent。
+- §2 任务包六项（目标/已知/范围/证据/返回/格式）；§3 整合：子 agent 返回为
+  候选事实，关键结论核对证据指针，冲突不取多数。
+- 删除 §2 工作方式、§4 五项不得覆盖清单、预算自算/复审路由细节、skill 路由；
+  分别由 Discipline / AGENTS 承担。
+- 注入回归：DeepSeek 8,294 字符、GLM 4,201、DeepSeek prepend 缺失降级 7,264，
+  三分支 ALL PASS；均在 max_context_chars=20000 内。
+
 ## 0.3.7 (2026-10-28)
 
 discipline 注入的 profile `heading` 由标题文案改为 markdown 分隔线。依据
