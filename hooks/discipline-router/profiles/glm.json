@@ -1,6 +1,7 @@
 {
   "profile_id": "glm",
   "enabled": true,
+  "prepend": "../glm-role.md",
   "prompt": "../GLM-discipline.md",
   "heading": "--------------",
   "max_prompt_bytes": 65536,

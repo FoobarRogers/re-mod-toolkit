@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.3.10 (2026-10-31)
+
+GLM 侧派单模式：GLM 主智能体负责规划、派单、验收与裁决，执行型小任务派给
+DeepSeek worker（官方 API 按量计费），降低 GLM coding plan 消耗与主对话轮次。
+
+- 新增 `agents/deepseek-worker.md`：执行型派单子智能体。显式 `model:` 绑定
+  DeepSeek 官方 API（`804526c5-…/deepseek-flash`，不留继承默认），工具
+  Read/Grep/Glob/Bash/Edit/Write，`injectAgentsMd: false`。正文为任务包契约
+  （目标/范围/验收判据/约束/上下文）+ 回报契约：DONE/PARTIAL/BLOCKED/FAILED、
+  改动文件清单、验证证据，紧凑格式、大输出落盘只回路径。
+- 新增 `hooks/discipline-router/glm-role.md`（GLM Main Agent Role）：①选型
+  （deepseek-worker 为默认执行通道；data-researcher / fork 型 / deepseek-review
+  分工；何时自己做）；②任务包五要素；③派单与验收循环——独立任务同轮并列
+  派发，验收不过先区分任务包缺陷/执行缺陷/假设错误再改包重派，同一假设族
+  两次失败按 Discipline §11 制动，离线自验不升级实机通过。
+- `profiles/glm.json` 加 `prepend: ../glm-role.md`，GLM 注入与 DeepSeek 结构
+  对称（role + discipline）；`GLM-discipline.md` 头部维护说明补记承载关系。
+- 注入回归：GLM 两模型 id（startplan / 火山）与 DeepSeek id 三分支 + 无匹配
+  降级 + role 缺失降级，ALL PASS（体积见 handoff；测试
+  `archive/tmp/test_glm_dispatch_router.py`）。
+
 ## 0.3.9 (2026-10-30)
 
 DeepSeek Discipline / Role 增补四项。四方法定稿链：GPT 审查包（基于视频
