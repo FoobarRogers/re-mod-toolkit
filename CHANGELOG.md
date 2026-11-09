@@ -1,9 +1,33 @@
 # Changelog
 
+## 0.3.11 (2026-11-09)
+
+skill 用词增补 5 处（源自 1.3 fix3→fix4 取证线开发提案，经 GPT 复审裁决修订与
+deepseek-review SUPPORTED 定稿）+ GLM 派单语义定稿：
+
+- `skills/reframework-lua-development/SKILL.md`：Verify behavior 段新增窄域单
+  次故障注入模式——注入 error() 只测 Lua 异常路径，并声明不重现的故障条件（原
+  生对象销毁、原生部分状态损坏、重入、原生故障）；注入本体不包 pcall（否则异
+  常到不了被测边界），诊断辅助单独保护；默认关闭、显式触发、交付前移除。
+- `skills/mod-debugging/SKILL.md`：打点纪律细化四条（过滤后写盘、pcall 保护参
+  数求值且不为补全记录回查活对象、xpcall 消息处理器在栈展开前捕获原始栈、整
+  块移除标记）；新增静默崩溃四层取证模式（生命周期迹 / 首错黑匣 / framework
+  log / OS 崩溃记录，按证据缺口选层）与两个归因陷阱（faulting module 不解除
+  mod 嫌疑；未终止进程的异常不必然产生自动崩溃报告，无 WER 记录不证明无异常）；
+  description 限定 mod-related 取证触发（465→725/1024）。
+- `skills/mod-package/SKILL.md`：交付报告新增玩家反馈指引条件项（交付目标含崩
+  溃证据收集或包内含诊断插桩时），导出命令仅在确需 Windows 事件记录时提供，
+  路径解析用 GetFolderPath、完整字段导出防表格截断。
+- `hooks/discipline-router/glm-role.md`：派单语义定稿——开头句显式"不预设任何
+  默认执行通道，按 ZCode 常规判断裁量派发，派出后不由主智能体代做"；§1 worker
+  条目删"默认执行通道"强推。注入回归 ALL PASS（GLM 5,327 字符 / 12,978 字节）。
+- 格式量测：全部技能 desc ≤1024、body <100KB（`docs/check-skill-limits.py`）。
+
 ## 0.3.10 (2026-10-31)
 
-GLM 侧派单模式：GLM 主智能体负责规划、派单、验收与裁决，执行型小任务派给
-DeepSeek worker（官方 API 按量计费），降低 GLM coding plan 消耗与主对话轮次。
+GLM 侧派单模式：是否派发 subagent 按 ZCode 常规方式判断；只要派发，主智能体
+就负责拆解、派单、验收与裁决（任务包 + 验收循环），不自己逐步完成；worker
+走 DeepSeek 官方 API 按量计费，降低 GLM coding plan 消耗与主对话轮次。
 
 - 新增 `agents/deepseek-worker.md`：执行型派单子智能体。显式 `model:` 绑定
   DeepSeek 官方 API（`804526c5-…/deepseek-flash`，不留继承默认），工具
@@ -11,10 +35,10 @@ DeepSeek worker（官方 API 按量计费），降低 GLM coding plan 消耗与�
   （目标/范围/验收判据/约束/上下文）+ 回报契约：DONE/PARTIAL/BLOCKED/FAILED、
   改动文件清单、验证证据，紧凑格式、大输出落盘只回路径。
 - 新增 `hooks/discipline-router/glm-role.md`（GLM Main Agent Role）：①选型
-  （deepseek-worker 为默认执行通道；data-researcher / fork 型 / deepseek-review
-  分工；何时自己做）；②任务包五要素；③派单与验收循环——独立任务同轮并列
-  派发，验收不过先区分任务包缺陷/执行缺陷/假设错误再改包重派，同一假设族
-  两次失败按 Discipline §11 制动，离线自验不升级实机通过。
+  （deepseek-worker / data-researcher / fork 型 / deepseek-review 分工；何时
+  自己做；不对具体通道设默认或禁用）；②任务包五要素；③派单与验收循环——
+  独立任务同轮并列派发，验收不过先区分任务包缺陷/执行缺陷/假设错误再改包
+  重派，同一假设族两次失败按 Discipline §11 制动，离线自验不升级实机通过。
 - `profiles/glm.json` 加 `prepend: ../glm-role.md`，GLM 注入与 DeepSeek 结构
   对称（role + discipline）；`GLM-discipline.md` 头部维护说明补记承载关系。
 - 注入回归：GLM 两模型 id（startplan / 火山）与 DeepSeek id 三分支 + 无匹配

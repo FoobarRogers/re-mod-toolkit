@@ -61,6 +61,8 @@ Check the task-relevant states, not merely script load:
 - feature enable, disable, and restoration behavior;
 - for changes on a per-frame path, a before/after profile comparison under matching scenario and drawing mode, stating the profiler's timing resolution, sampling method, and any resulting limits on the comparison.
 
+When a suspected crash path cannot be triggered naturally, test the claimed handling boundary with narrowly scoped, one-shot fault injection: inject a Lua error at the claimed point, keep the injection off by default behind an explicit trigger, and state which conditions it does and does not reproduce — an injected error() exercises the Lua exception path only, not native object destruction, native partial-state corruption, reentrancy, or native faults. Do not wrap the injected error itself in pcall; that swallows the exception before it reaches the boundary under test — protect diagnostic helpers separately instead. Remove or disable all injection before delivery.
+
 A local interpreter proves logic, not environment: list every non-portable facility the script touches and treat it as unverified until the target build loads it — never report "ran fine locally" as verification. Keep stubs, fake-object harnesses, and self-tests out of the deployed tree, each guarded to exit before touching `sdk`, `re`, or `imgui`.
 
 Keep script-side errors here — a popup, or a traceback whose cause is visible in the script plus the error message, is part of the development loop. Hand off to `mod-debugging` for runtime evidence: logs, missed hooks, reload ordering, repeated framework-level errors, timing and performance. Use `reengine-asset-diagnosis` when the evidence points to mesh, material, PFB, physics, path, or another native resource layer.
