@@ -62,6 +62,7 @@
 - Runtime、Hook、Reset Script、生命周期、日志与冲突诊断：`docs/runtime-and-hooks.md`。
 - 项目目录约定：`docs/project-layout.md`（项目实际布局不同时更新该文件，不强行迁移目录）。
 - 大日志、dump、JSON 与大 diff 按 `docs/token-discipline.md` 先过滤，原始证据不完整载入主上下文。
+- 落盘分位：现行主题文档留 `docs/` 根；已确定内容（裁决/调查结论/原始证据）进 `docs/evidence/`（原始证据多文件按 `{主题-日期}/` 子目录）；传递文件（提案/专项交接/handoff 切片/会话日志）进 `docs/history/`；发出待回复的复审材料进 `docs/review/`，命名 `review-for-{对象}`，收到回复或已有更强结论后移入 `docs/archive/`——review 不是已确定内容，不进 evidence。文件名 `{类型前缀}-{中文短主题}-{YYYY-MM-DD}`（verdict/investigation/proposal/handover/review/evidence），ls 即辨类型与状态；当前活跃 review 及其状态在 handoff 登记。
 - 项目专属 API、对象链、Hook 点和实机结论另建事实文档；项目证据可覆盖通用 Skill 的默认建议。
 
 ## 7. 本地 Windows 工具链（仅 DLL / 原生编译时适用）

@@ -64,6 +64,7 @@
 - 只有证据指向运行时骨骼映射或 Transform 应用时读取 `docs/luabone-integration.md`。
 - 只有项目已组件化并实际使用 AVM 时读取 `docs/avm-json.md`；修改 AVM Lua 本体属于 Lua 开发，组合预设属于项目配置，两者不得混淆。
 - 大型资源清单、解析结果、日志和 JSON 按 `docs/token-discipline.md` 过滤，不完整载入主上下文。
+- 落盘分位：现行主题文档留 `docs/` 根；已确定内容（裁决/调查结论/原始证据）进 `docs/evidence/`（原始证据多文件按 `{主题-日期}/` 子目录）；传递文件（提案/专项交接/handoff 切片/会话日志）进 `docs/history/`；发出待回复的复审材料进 `docs/review/`，命名 `review-for-{对象}`，收到回复或已有更强结论后移入 `docs/archive/`——review 不是已确定内容，不进 evidence。文件名 `{类型前缀}-{中文短主题}-{YYYY-MM-DD}`（verdict/investigation/proposal/handover/review/evidence），ls 即辨类型与状态；当前活跃 review 及其状态在 handoff 登记。
 - 项目路径、引用链、ID 映射和已验证视觉结论应进入项目事实文档，而不是长期留在 handoff。
 
 ## 7. 本地 Windows 工具链（仅 DLL / 原生编译时适用）

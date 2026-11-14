@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.3.12 (2026-11-14)
+
+落盘分位规范（治"落盘及时但回读难辨"：agent 光看文件名分不清类型与归属）：
+
+- `hooks/discipline-router/GLM-discipline.md` + `hooks/discipline-router/
+  deepseek-discipline.md`：§10 增补落盘分位条款——现行主题文档留 `docs/` 根；
+  已确定内容（裁决、调查结论、原始证据）进 `docs/evidence/`；传递文件（提案、
+  专项交接、handoff 切片）进 `docs/history/`；发出待回复的复审材料进
+  `docs/review/`（命名 `review-for-{对象}`），收到回复或已有更强结论后移入
+  `docs/archive/`——review 不是已确定内容，不进 evidence 防误导；文件名
+  `{类型前缀}-{中文短主题}-{YYYY-MM-DD}`（verdict/investigation/proposal/
+  handover/review/evidence），ls 后无需读内容即可分辨类型与状态。
+- `templates/*/AGENTS.md` ×4：项目资料路由节增补同款落盘分位条目，新项目开箱
+  即用。
+- 注入回归 ALL PASS（DeepSeek 9,181 / GLM 5,503 / prepend 缺失降级 7,894 字
+  符，预算 20000 内）；中文文件名工具链兼容实测（ls/Read/grep/glob）。
+
 ## 0.3.11 (2026-11-09)
 
 skill 用词增补 5 处（源自 1.3 fix3→fix4 取证线开发提案，经 GPT 复审裁决修订与

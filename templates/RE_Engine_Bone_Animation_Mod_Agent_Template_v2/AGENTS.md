@@ -62,6 +62,7 @@
 - `docs/slot-map.md`：动作 / 槽位画像与复现命令，是动画事实索引；定案后优先更新这里或项目的 `established-conclusions.md`。
 - `docs/project-layout.md`：项目实际使用的 provider / tools / patch / release 布局；不同项目可修改。
 - 大型 motlist、dump、探针 JSON、逐帧数据与日志按 `docs/token-discipline.md` 过滤。
+- 落盘分位：现行主题文档留 `docs/` 根；已确定内容（裁决/调查结论/原始证据）进 `docs/evidence/`（原始证据多文件按 `{主题-日期}/` 子目录）；传递文件（提案/专项交接/handoff 切片/会话日志）进 `docs/history/`；发出待回复的复审材料进 `docs/review/`，命名 `review-for-{对象}`，收到回复或已有更强结论后移入 `docs/archive/`——review 不是已确定内容，不进 evidence。文件名 `{类型前缀}-{中文短主题}-{YYYY-MM-DD}`（verdict/investigation/proposal/handover/review/evidence），ls 即辨类型与状态；当前活跃 review 及其状态在 handoff 登记。
 - 会话开始自检：先读 `docs/session-handoff.md` 再开始工作（一次性小任务可跳过；任务依赖既有进度时必须先读）。
 - Discipline 与 Role 注入：由 `re-mod-toolkit` 插件的 SessionStart hook 按当前模型自动注入对应内容（DeepSeek → `deepseek-discipline.md` + `deepseek-role.md`，GLM → `GLM-discipline.md`）；注入缺失或内容可疑时，到已安装插件目录的 `hooks/discipline-router/`（或 GitHub 仓库 `FoobarRogers/re-mod-toolkit`）读取对应文件作保底（DeepSeek 需同时补读 discipline 与 role）。
 
