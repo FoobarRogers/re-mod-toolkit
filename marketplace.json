@@ -5,13 +5,13 @@
     {
       "name": "re-mod-toolkit",
       "source": ".",
-      "version": "0.3.12",
-      "description": "RE Engine mod development toolkit: discipline router hooks, review agents, deepseek-worker dispatch agent, mod skills, video frame-diff MCP.",
+      "version": "0.4.0",
+      "description": "RE Engine mod development toolkit: discipline router hooks, review agents, worker dispatch agents, mod skills, video frame-diff and docs knowledge-base MCP.",
       "displayName": "RE Mod Toolkit",
       "displayName_i18n": { "zh-CN": "RE Mod 工具箱" },
       "description_i18n": {
         "en": "RE Engine mod development toolkit: discipline router hooks, review agents, deepseek-worker dispatch agent, mod skills, video frame-diff MCP.",
-        "zh-CN": "RE Engine Mod 开发工具箱：Discipline 路由 hook、跨模型复审 agent、DeepSeek 执行派单 agent、Mod 开发 skill、视频帧 diff MCP。"
+        "zh-CN": "RE Engine Mod 开发工具箱：Discipline 路由 hook、跨模型复审 agent、执行派单 agent、Mod 开发 skill、视频帧 diff 与 docs 知识库 MCP。"
       },
       "category": "developer-tools"
     }

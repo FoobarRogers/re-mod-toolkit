@@ -1,10 +1,10 @@
 {
   "name": "re-mod-toolkit",
-  "version": "0.3.12",
-  "description": "RE Engine mod development toolkit: model-routed SessionStart discipline injection, large-file read guard, context water-level reminder, cross-model review agents, deepseek-worker dispatch agent with GLM dispatch-role injection, data-researcher agent, version/promote/release commands, 9 RE Engine mod skills, and a keyless two-tool video frame-diff MCP server (probe_frame + analyze_video_diff).",
+  "version": "0.4.0",
+  "description": "RE Engine mod development toolkit: model-routed SessionStart discipline injection, large-file read guard, context water-level reminder, cross-model review agents, deepseek-worker dispatch agent with GLM dispatch-role injection, data-researcher agent, version/promote/release and kb commands, 10 RE Engine mod skills, a keyless two-tool video frame-diff MCP server (probe_frame + analyze_video_diff), and a docs knowledge-base MCP server (kb_list + kb_search + kb_read).",
   "description_i18n": {
-    "en": "RE Engine mod development toolkit: model-routed SessionStart discipline injection, large-file read guard, context water-level reminder, cross-model review agents, deepseek-worker dispatch agent with GLM dispatch-role injection, data-researcher agent, version/promote/release commands, 9 RE Engine mod skills, and a keyless two-tool video frame-diff MCP server (probe_frame + analyze_video_diff).",
-    "zh-CN": "RE Engine Mod 开发工具箱：按模型路由的 SessionStart Discipline 注入、大文件读取硬拦截、上下文水位提醒、跨模型复审 subagent、DeepSeek 执行派单 subagent 与 GLM 派单 Role 注入、大数据研究 subagent、版本晋升/发布 command、9 个 RE Engine Mod 开发 skill，以及零模型依赖的双工具视频帧 diff MCP server（probe_frame + analyze_video_diff）。"
+    "en": "RE Engine mod development toolkit: model-routed SessionStart discipline injection, large-file read guard, context water-level reminder, cross-model review agents, deepseek-worker dispatch agent with GLM dispatch-role injection, data-researcher agent, version/promote/release and kb commands, 10 RE Engine mod skills, a keyless two-tool video frame-diff MCP server (probe_frame + analyze_video_diff), and a docs knowledge-base MCP server (kb_list + kb_search + kb_read).",
+    "zh-CN": "RE Engine Mod 开发工具箱：按模型路由的 SessionStart Discipline 注入、大文件读取硬拦截、上下文水位提醒、跨模型复审 subagent、DeepSeek 执行派单 subagent 与 GLM 派单 Role 注入、大数据研究 subagent、版本晋升/发布与 kb 登记/体检 command、10 个 RE Engine Mod 开发 skill、零模型依赖的双工具视频帧 diff MCP server（probe_frame + analyze_video_diff），以及 docs 知识库 MCP server（kb_list + kb_search + kb_read）。"
   },
   "author": {
     "name": "mirac"
@@ -29,6 +29,12 @@
       "command": "python",
       "args": ["${ZCODE_PLUGIN_ROOT}/mcp/glm-vision/server.py"],
       "timeoutMs": 300000
+    },
+    "re-mod-kb": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["${ZCODE_PLUGIN_ROOT}/mcp/kb/server.py"],
+      "timeoutMs": 60000
     }
   }
 }

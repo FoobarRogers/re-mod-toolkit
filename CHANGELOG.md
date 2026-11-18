@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.0 (2026-11-19)
+
+kb 知识库 MCP + 编辑粒度增补（Discipline §10/§13）：
+
+- `mcp/kb/server.py`：`re-mod-kb` MCP server——`kb_list`（多库与标题树枚举，scope 分位过滤）/ `kb_search`（章节级关键词检索：标题加权、中文 2-gram 兜底、命中被推翻节时状态行置顶）/ `kb_read`（按 heading 定向取节，86KB 级调查文件只取需要的节）。registry 多库登记（7 库 124 md），公区库 `D:\ZCODE-PLUGIN\lua-patterns`（20 md 跨 mod 可复用模式）登记后全工具可用。
+- `commands/kb-register.md` + `commands/kb-doctor.md`：知识库登记与体检 command。
+- `skills/evidence-format/`：证据文件格式规范 skill（file_note / 状态行 / 继承指针；kb 存量 37 份 evidence 按此完成格式化）。
+- `commands/new-mod-project.md`：新增第 6 步知识库登记检查（未登记只提示不阻塞项目创建）。
+- `hooks/discipline-router/deepseek-discipline.md`：§10 增补 ZCode 写入前置细则——目标文件已明确先用 `Read` 覆盖改动与锚点（grep/Glob 不满足写入前置）、相邻改动合并为最小连续片段一次写入、验证优先复用现成脚本或命令、外部验收交接注明待验收；§13 停止表述澄清（"即停止" → "结束当前取证并执行该动作"），GLM-discipline §13 两份同步。实机复测判读：四次运行（nearby×2 / scattered 双组）失败 Edit 0、Edit 前已 Read 4/4、3×Edit 同轮并列达标，产物验收 31/31×2 与 20/20×2 全过。
+- 注入回归 ALL PASS（DeepSeek 9,405 / GLM 5,697 字符，预算 20000 内）；kb 三链路实机抽验通过（list 7 库 / search 5:5 命中 / read 整节回读）。
+
 ## 0.3.12 (2026-11-14)
 
 落盘分位规范（治"落盘及时但回读难辨"：agent 光看文件名分不清类型与归属）：
