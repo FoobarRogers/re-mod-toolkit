@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.4.1 (2026-11-20)
+
+视觉证据管线提质 + 图片读取门禁放宽（flash 套餐计费下字节精调不再有意义）：
+
+- `hooks/zcode-large-file-guard/large-file-guard.py`：Read 通道新增图片扩展名
+  **16 MiB 档**（`.jpg/.jpeg/.png/.webp/.gif/.bmp`）；原 glm-vision 视觉证据
+  256 KiB 特判档（`_spike`/`_probe`/`_marked`/`glm_vision_marks` 命名匹配）
+  取消并入——MCP 产物即图片，直接按图片档放行。Bash 通道不放宽（图片被
+  `cat` 裸 dump 到 stdout 时字节全部变文本 token，64 KiB 拦截保留）。参数位
+  重排：argv 3 参 `65536 120 16777216`（VISUAL 位删除）。回归 21 case 全绿
+  （工作区 `tmp/hook-test/run_guard_tests.py`，含 HEAD 差分对照）。
+- `mcp/glm-vision/server.py`：`_save_jpeg_small`（缩图链 760→…宽 +
+  q95/90/85，目标 128 KiB / 硬上限 256 KiB）→ **`_save_jpeg` 原分辨率 q90
+  直出**，仅当产出超 8 MiB（8K+ 级病态源）才逐级降质兜底。720p 帧产物
+  PSNR 28.9 → 37.2 dB（分辨率层损失清零），产物 277 KiB；4K 1.2 MiB /
+  8K 3.13 MiB，均远低于 16 MiB 门禁。动机：细节保留支撑主 agent 理解
+  diff 帧成因；视觉 token 按分辨率独立计费，文件字节非约束。
+
 ## 0.4.0 (2026-11-19)
 
 kb 知识库 MCP + 编辑粒度增补（Discipline §10/§13）：

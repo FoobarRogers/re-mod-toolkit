@@ -28,7 +28,7 @@
               "${ZCODE_PLUGIN_ROOT}/hooks/zcode-large-file-guard/large-file-guard.py",
               "65536",
               "120",
-              "262144"
+              "16777216"
             ],
             "timeoutMs": 5000
           }

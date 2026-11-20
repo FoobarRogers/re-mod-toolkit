@@ -1,6 +1,6 @@
 {
   "name": "re-mod-toolkit",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "RE Engine mod development toolkit: model-routed SessionStart discipline injection, large-file read guard, context water-level reminder, cross-model review agents, deepseek-worker dispatch agent with GLM dispatch-role injection, data-researcher agent, version/promote/release and kb commands, 10 RE Engine mod skills, a keyless two-tool video frame-diff MCP server (probe_frame + analyze_video_diff), and a docs knowledge-base MCP server (kb_list + kb_search + kb_read).",
   "description_i18n": {
     "en": "RE Engine mod development toolkit: model-routed SessionStart discipline injection, large-file read guard, context water-level reminder, cross-model review agents, deepseek-worker dispatch agent with GLM dispatch-role injection, data-researcher agent, version/promote/release and kb commands, 10 RE Engine mod skills, a keyless two-tool video frame-diff MCP server (probe_frame + analyze_video_diff), and a docs knowledge-base MCP server (kb_list + kb_search + kb_read).",

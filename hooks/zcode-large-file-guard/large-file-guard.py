@@ -8,16 +8,22 @@
 hook 进程从未启动（ZCode 日志记 Hook execution failed）。
 
 Usage:
-    python large-file-guard.py [maxFullReadBytes] [maxPartialLines] [maxVisualEvidenceBytes]
+    python large-file-guard.py [maxFullReadBytes] [maxPartialLines] [maxImageBytes]
 
 Recommended:
-    maxFullReadBytes       = 65536   (64 KiB)
+    maxFullReadBytes       = 65536      (64 KiB)
     maxPartialLines        = 120
-    maxVisualEvidenceBytes = 262144  (256 KiB)
+    maxImageBytes          = 16777216   (16 MiB)
 
 Principles:
 - Ordinary files keep the strict 64 KiB full-read gate.
-- MCP-generated visual evidence images get a separate 256 KiB gate.
+- Images (by extension) get a 16 MiB gate on the Read channel only: image
+  context cost is vision tokens (resolution-based, bounded), not bytes.
+  The former MCP visual-evidence 256 KiB special gate is merged into this
+  gate (2026-11-20: byte-level precision no longer meaningful under
+  subscription pricing).
+- Bash raw dumps do NOT get the image gate: dumped image bytes become text
+  tokens, so the 64 KiB gate stays.
 - Large full Reads are blocked.
 - Bounded partial Reads of large files are allowed.
 - Obvious raw shell dumps are blocked.
@@ -37,9 +43,9 @@ if hasattr(sys.stdout, "reconfigure"):
 
 DEFAULT_MAX_FULL_READ_BYTES = 64 * 1024
 DEFAULT_MAX_PARTIAL_LINES = 120
-DEFAULT_MAX_VISUAL_EVIDENCE_BYTES = 256 * 1024
+DEFAULT_MAX_IMAGE_BYTES = 16 * 1024 * 1024
 
-VISUAL_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
+IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp"}
 
 
 def positive_int(value, fallback):
@@ -67,9 +73,8 @@ MAX_FULL_READ_BYTES = positive_int(
 MAX_PARTIAL_LINES = positive_int(
     _arg_or_env(argv, 1, "ZCODE_LARGE_FILE_GUARD_LINES"), DEFAULT_MAX_PARTIAL_LINES
 )
-MAX_VISUAL_EVIDENCE_BYTES = positive_int(
-    _arg_or_env(argv, 2, "ZCODE_VISUAL_EVIDENCE_GUARD_BYTES"),
-    DEFAULT_MAX_VISUAL_EVIDENCE_BYTES,
+MAX_IMAGE_BYTES = positive_int(
+    _arg_or_env(argv, 2, "ZCODE_IMAGE_GUARD_BYTES"), DEFAULT_MAX_IMAGE_BYTES
 )
 
 
@@ -111,26 +116,23 @@ def stat_regular_file(cwd, raw_path):
         return None
 
 
-def is_visual_evidence_file(path):
-    """只给视觉 MCP 产出的证据图放宽门禁，不放宽普通图片。"""
+def is_image_file(path):
+    """按扩展名识别图片（通用图片档用；不解析内容，与 hook 整体口径一致）。"""
     if not isinstance(path, str) or not path:
         return False
-    norm = os.path.normpath(path).lower()
-    name = os.path.basename(norm)
-    ext = os.path.splitext(name)[1]
-    if ext not in VISUAL_IMAGE_EXTENSIONS:
-        return False
-    return (
-        "_spike" in name
-        or "_probe" in name
-        or "_marked" in name
-        or "glm_vision_marks" in norm
-    )
+    ext = os.path.splitext(os.path.basename(os.path.normpath(path).lower()))[1]
+    return ext in IMAGE_EXTENSIONS
 
 
-def full_read_limit_for(path):
-    return (MAX_VISUAL_EVIDENCE_BYTES
-            if is_visual_evidence_file(path) else MAX_FULL_READ_BYTES)
+def full_read_limit_for(path, include_image=False):
+    """整读上限分档：图片在 Read 通道按 16 MiB 图片档（视觉 token 按分辨率计
+    且总量有界，与文件字节量不成比例）；其余 64 KiB。include_image 只在
+    Read 分支开启——图片被 Bash 裸 dump 到 stdout 时字节会全部变成文本
+    token，64 KiB 拦截必须保留。原 MCP 视觉证据 256 KiB 特判档已并入图片档
+    （2026-11-20，套餐计费下字节级精调不再有意义）。"""
+    if include_image and is_image_file(path):
+        return MAX_IMAGE_BYTES
+    return MAX_FULL_READ_BYTES
 
 
 def emit_deny(reason, context):
@@ -240,7 +242,7 @@ def main():
         info = stat_regular_file(cwd, get_read_path(tool_input))
         if not info:
             return 0
-        max_read_bytes = full_read_limit_for(info["full"])
+        max_read_bytes = full_read_limit_for(info["full"], include_image=True)
         if info["size"] <= max_read_bytes:
             return 0
 

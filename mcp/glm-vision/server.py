@@ -96,50 +96,32 @@ def _load_font(size: int):
     return ImageFont.load_default()
 
 
-JPEG_TARGET_BYTES = 128 * 1024
-JPEG_HARD_MAX_BYTES = 256 * 1024
+JPEG_QUALITY = 90
+JPEG_SOFT_MAX_BYTES = 8 * 1024 * 1024
 
 
-def _save_jpeg_small(img: Image.Image, out_path: str,
-                     target_bytes: int = JPEG_TARGET_BYTES,
-                     hard_max_bytes: int = JPEG_HARD_MAX_BYTES,
-                     start_w: int = 760) -> str:
-    """保存视觉证据 JPEG：优先清晰度，目标 <=128 KiB，硬上限 <=256 KiB。
+def _save_jpeg(img: Image.Image, out_path: str,
+               quality: int = JPEG_QUALITY,
+               soft_max_bytes: int = JPEG_SOFT_MAX_BYTES) -> str:
+    """保存视觉证据 JPEG：原分辨率 q90 直出。
 
-    先在当前尺寸尝试 q95/q90/q85；能达到 target_bytes 就立即返回。
-    若 q85 已低于 hard_max_bytes，即使略高于目标也保留当前分辨率；
-    只有仍超过硬上限时才继续缩小尺寸。极端高熵画面最后再降低质量兜底。
+    门禁图片档放宽到 16 MiB 后产物字节不再是约束；视觉 token 按分辨率
+    独立计费（flash 套餐），画质由源帧分辨率与 zoom 特写设计承担，不再
+    主动缩图降质。仅当产出超过 soft_max_bytes（病态超大源，如 8K+ 录屏
+    帧）才逐级降质/缩宽兜底，保证产物永不越过 16 MiB 门禁。
     """
+    img.save(out_path, "JPEG", quality=quality, optimize=True)
+    if os.path.getsize(out_path) <= soft_max_bytes:
+        return out_path
+    for q in (85, 80, 70, 60):
+        img.save(out_path, "JPEG", quality=q, optimize=True)
+        if os.path.getsize(out_path) <= soft_max_bytes:
+            return out_path
     w, h = img.size
-    p = out_path
-    first_w = min(max(1, int(start_w)), w)
-
-    widths = [first_w]
-    for tw in (600, 480, 380, 300, 240, 192):
-        if tw < first_w and tw not in widths:
-            widths.append(tw)
-
-    last_im = img
-    for tw in widths:
-        im = img if tw >= w else img.resize((tw, round(h * tw / w)), Image.LANCZOS)
-        last_im = im
-        size = None
-        for q in (95, 90, 85):
-            im.save(p, "JPEG", quality=q, optimize=True)
-            size = os.path.getsize(p)
-            if size <= target_bytes:
-                return p
-        # q85 仍略高于目标但未触及硬上限：保清晰度/分辨率，不再继续缩图。
-        if size is not None and size <= hard_max_bytes:
-            return p
-
-    # 极端高熵画面兜底：在最小尺寸进一步降质量，确保不越过硬上限。
-    for q in (80, 75, 65, 55, 45):
-        last_im.save(p, "JPEG", quality=q, optimize=True)
-        if os.path.getsize(p) <= hard_max_bytes:
-            return p
-
-    return p
+    if w > 3840:  # 极端病态源：缩宽兜底
+        img.resize((3840, round(h * 3840 / w)), Image.LANCZOS).save(
+            out_path, "JPEG", quality=80, optimize=True)
+    return out_path
 
 
 # ===== diff 尖峰定位: 像素级扫描替代视觉模型粗扫, 标注图压到主模型可读 =====
@@ -260,7 +242,7 @@ def _diff_region_image(a, b, boxes, region, title: str, out_path: str) -> str:
         for ox in (0, w + gap):
             dr.rectangle([ox + bx - rx, 30 + by - ry, ox + bx - rx + bw, 30 + by - ry + bh],
                          outline=(60, 255, 60), width=4)
-    return _save_jpeg_small(canvas, out_path)
+    return _save_jpeg(canvas, out_path)
 
 
 def _diff_zoom_image(a, b, box, title: str, out_path: str) -> str:
@@ -291,7 +273,7 @@ def _diff_zoom_image(a, b, box, title: str, out_path: str) -> str:
         dr.rectangle([ox + round((x - x1) * scale), 30 + round((y - y1) * scale),
                       ox + round((x - x1 + bw) * scale), 30 + round((y - y1 + bh) * scale)],
                      outline=(60, 255, 60), width=3)
-    return _save_jpeg_small(canvas, out_path, start_w=1100)
+    return _save_jpeg(canvas, out_path)
 
 
 def _resolution(info: dict) -> tuple:
@@ -538,9 +520,9 @@ def probe_frame(video_path: str, t: str = "") -> str:
         _extract_frame(video_path, t_sec, fp)
     except ValueError as e:
         return f"错误: {e}"
-    # 复用视觉证据压缩: 主模型读图的 token 开销有界(<=256KiB)
+    # 原分辨率 q90 直出：视觉 token 按分辨率独立计费，字节非约束
     with Image.open(fp) as im:
-        _save_jpeg_small(im.convert("RGB"), fp)
+        _save_jpeg(im.convert("RGB"), fp)
     return (f"== probe_frame: {os.path.basename(video_path)} @ {t_sec:.3f}s ==\n"
             f"帧图: {fp}\n"
             f"视频: {W}x{H}, 时长 {info['duration_sec']}s, "

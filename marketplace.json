@@ -5,7 +5,7 @@
     {
       "name": "re-mod-toolkit",
       "source": ".",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "description": "RE Engine mod development toolkit: discipline router hooks, review agents, worker dispatch agents, mod skills, video frame-diff and docs knowledge-base MCP.",
       "displayName": "RE Mod Toolkit",
       "displayName_i18n": { "zh-CN": "RE Mod 工具箱" },
